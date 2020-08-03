@@ -44,6 +44,7 @@ class _MyAppState extends State<MyApp> {
       DateTime lastCommitDate = DateTime.fromMillisecondsSinceEpoch(lastCommitDateTime);
       if (lastCommitDate.difference(DateTime.now()).inDays != 0)
         screenNotifier.currentScreen = Screen.TESTING_SCREEN;
+      else screenNotifier.currentScreen = Screen.COMMIT_SCREEN;
 
     } else if (numOfLaunches != 0) {
       screenNotifier.currentScreen = Screen.COMMIT_SCREEN;
@@ -117,7 +118,7 @@ class _MyAppState extends State<MyApp> {
             case Screen.TESTING_SCREEN:
               return TestingScreen();
             default:
-              return CommitWordsScreen();
+              return LoadingScreen();
           }
         },
       ),
