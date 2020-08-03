@@ -39,14 +39,15 @@ class _MyAppState extends State<MyApp> {
 
     ScreenNotifier screenNotifier =
         Provider.of<ScreenNotifier>(context, listen: false);
+
     if (lastCommitDateTime != null) {
       DateTime lastCommitDate = DateTime.fromMillisecondsSinceEpoch(lastCommitDateTime);
       if (lastCommitDate.difference(DateTime.now()).inDays != 0)
         screenNotifier.currentScreen = Screen.TESTING_SCREEN;
 
-    } else if (numOfLaunches != 0)
+    } else if (numOfLaunches != 0) {
       screenNotifier.currentScreen = Screen.COMMIT_SCREEN;
-    else screenNotifier.currentScreen = Screen.WELCOME_SCREEN;
+    }  else screenNotifier.currentScreen = Screen.WELCOME_SCREEN;
   }
 
   _getUserData(context) async {
@@ -116,7 +117,7 @@ class _MyAppState extends State<MyApp> {
             case Screen.TESTING_SCREEN:
               return TestingScreen();
             default:
-              return LoadingScreen();
+              return CommitWordsScreen();
           }
         },
       ),
