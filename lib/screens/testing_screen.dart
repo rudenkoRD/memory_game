@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:audioplayers/audio_cache.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +30,36 @@ class _TestingScreenState extends State<TestingScreen> {
     }
     if(userData.wordList[currentTestingWord].isMemorized) return -1;
     else return currentTestingWord;
+  }
+
+  @override
+  void initState(){
+    checkDay();
+    super.initState();
+  }
+
+  checkDay() async{
+    final prefs = await SharedPreferences.getInstance();
+
+    int lastCommitDateTime = prefs.getInt('lastCommitDate');
+    DateTime lastCommitDate = DateTime.fromMillisecondsSinceEpoch(lastCommitDateTime);
+    if (lastCommitDate.difference(DateTime.now()).inDays == 0){
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await showDialog(context: context, builder: (context) =>  AlertDialog(
+          title: Text('You have to wait till the next day to test yourself'),
+          actions: <Widget>[
+            FlatButton(
+              onPressed: () {
+                exit(0);
+              },
+              child: Text('ok, leave an app', style: TextStyle(color: Colors.white),),
+              color: Colors.green,
+            ),
+          ],
+        ));
+      }
+      );
+    }
   }
 
   @override

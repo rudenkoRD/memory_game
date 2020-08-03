@@ -41,11 +41,7 @@ class _MyAppState extends State<MyApp> {
         Provider.of<ScreenNotifier>(context, listen: false);
 
     if (lastCommitDateTime != null) {
-      DateTime lastCommitDate = DateTime.fromMillisecondsSinceEpoch(lastCommitDateTime);
-      if (lastCommitDate.difference(DateTime.now()).inDays != 0)
         screenNotifier.currentScreen = Screen.TESTING_SCREEN;
-      else screenNotifier.currentScreen = Screen.COMMIT_SCREEN;
-
     } else if (numOfLaunches != 0) {
       screenNotifier.currentScreen = Screen.COMMIT_SCREEN;
     }  else screenNotifier.currentScreen = Screen.WELCOME_SCREEN;
