@@ -28,10 +28,11 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   int numOfLaunches;
+  int lastCommitDateTime;
 
   Future _getLastCommitDate(context) async {
     final prefs = await SharedPreferences.getInstance();
-    int lastCommitDateTime = prefs.getInt('lastCommitDate');
+    lastCommitDateTime = prefs.getInt('lastCommitDate');
     numOfLaunches = prefs.getInt('numberOfLaunches');
 
     print(numOfLaunches);
@@ -112,7 +113,7 @@ class _MyAppState extends State<MyApp> {
             case Screen.COMMIT_SCREEN:
               return CommitWordsScreen();
             case Screen.TESTING_SCREEN:
-              return TestingScreen();
+              return TestingScreen(lastCommitDateTime: lastCommitDateTime,);
             default:
               return LoadingScreen();
           }

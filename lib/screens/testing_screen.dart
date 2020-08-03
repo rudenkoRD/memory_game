@@ -9,6 +9,9 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TestingScreen extends StatefulWidget {
+  final int lastCommitDateTime;
+
+  const TestingScreen({Key key, this.lastCommitDateTime}) : super(key: key);
   @override
   _TestingScreenState createState() => _TestingScreenState();
 }
@@ -34,28 +37,28 @@ class _TestingScreenState extends State<TestingScreen> {
 
   @override
   void initState(){
-    checkDay();
     super.initState();
   }
 
-  checkDay() async{
-    final prefs = await SharedPreferences.getInstance();
+  checkDay() {
+    DateTime lastCommitDate = DateTime.fromMillisecondsSinceEpoch(widget.lastCommitDateTime);
 
-    int lastCommitDateTime = prefs.getInt('lastCommitDate');
-    DateTime lastCommitDate = DateTime.fromMillisecondsSinceEpoch(lastCommitDateTime);
     if (lastCommitDate.difference(DateTime.now()).inDays == 0){
       WidgetsBinding.instance.addPostFrameCallback((_) async {
-        await showDialog(context: context, builder: (context) =>  AlertDialog(
-          title: Text('You have to wait till the next day to test yourself'),
-          actions: <Widget>[
-            FlatButton(
-              onPressed: () {
-                exit(0);
-              },
-              child: Text('ok, leave an app', style: TextStyle(color: Colors.white),),
-              color: Colors.green,
-            ),
-          ],
+        await showDialog(context: context, builder: (context) =>  WillPopScope(
+          onWillPop: () async => false,
+          child: AlertDialog(
+            title: Text('You have to wait till the next day to test yourself'),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  exit(0);
+                },
+                child: Text('ok, leave an app', style: TextStyle(color: Colors.white),),
+                color: Colors.green,
+              ),
+            ],
+          ),
         ));
       }
       );
@@ -69,6 +72,8 @@ class _TestingScreenState extends State<TestingScreen> {
     if (currentTestingWord == -1) {
       currentTestingWord = getWordNumToTest(usersDataNotifier);
     }
+
+    checkDay();
 
     return Scaffold(
       appBar: AppBar(
