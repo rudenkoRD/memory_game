@@ -136,70 +136,69 @@ class _TestingScreenState extends State<TestingScreen> {
                   ),
                 ),
               ),
-              Expanded(
-                flex: 1,
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 10.0),
-                  child: RaisedButton(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    onPressed: () async {
-                      if (answerFormState.currentState.validate()) {
-                        answerFormState.currentState.save();
-                        answerFormState.currentState.reset();
+              Container(
+                margin: EdgeInsets.only(bottom: 20),
+                child: FlatButton(
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  color: Colors.deepPurple,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  onPressed: () async {
+                    if (answerFormState.currentState.validate()) {
+                      answerFormState.currentState.save();
+                      answerFormState.currentState.reset();
 
-                        if (currentAnswer.trim().toLowerCase() ==
-                            usersDataNotifier.wordList[currentTestingWord].firstValue.toString().trim().toLowerCase()) {
-                          Scaffold.of(context).showSnackBar(
-                            SnackBar(
-                              backgroundColor: Colors.green,
-                              content: Text('Well done'),
-                            ),
-                          );
+                      if (currentAnswer.trim().toLowerCase() ==
+                          usersDataNotifier.wordList[currentTestingWord].firstValue.toString().trim().toLowerCase()) {
+                        Scaffold.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: Colors.green,
+                            content: Text('Well done'),
+                          ),
+                        );
 
-                          usersDataNotifier.wordList[currentTestingWord].isMemorized = true;
-                          usersDataNotifier.successRememberedWordsNum++;
-                          usersDataNotifier.wordList[currentTestingWord].mempool = 0;
-                        } else {
-                          usersDataNotifier.wordsCommitted--;
-                          usersDataNotifier.wordList[currentTestingWord].mempool = 0;
-                          Scaffold.of(context).showSnackBar(
-                            SnackBar(
-                              backgroundColor: Colors.red,
-                              content: Text('Oops that\'s not right'),
-                            ),
-                          );
-                        }
-
-                        final prefs = await SharedPreferences.getInstance();
-
-                        prefs.setInt('wordsCommitted', usersDataNotifier.wordsCommitted);
-                        prefs.setInt('successRememberedWordsNum', usersDataNotifier.successRememberedWordsNum);
-
-                        List<String> data = List();
-                        usersDataNotifier.wordList.forEach((element) {
-                          data.add(element.toString());
-                          print(element.toString());
-                        });
-                        prefs.setStringList('words', data);
-
-                        currentTestingWord = getWordNumToTest(usersDataNotifier);
-                        if (currentTestingWord == -1) {
-                          usersDataNotifier.currentDayToRemember =
-                              usersDataNotifier.toRememberWordsNum;
-                          prefs.setInt('currentDayToRemember',
-                              usersDataNotifier.currentDayToRemember);
-                          prefs.remove('lastCommitDate');
-                          screenNotifier.currentScreen = Screen.COMMIT_SCREEN;
-                        }
-
-                        setState(() {});
+                        usersDataNotifier.wordList[currentTestingWord].isMemorized = true;
+                        usersDataNotifier.successRememberedWordsNum++;
+                        usersDataNotifier.wordList[currentTestingWord].mempool = 0;
+                      } else {
+                        usersDataNotifier.wordsCommitted--;
+                        usersDataNotifier.wordList[currentTestingWord].mempool = 0;
+                        Scaffold.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: Colors.red,
+                            content: Text('Oops that\'s not right'),
+                          ),
+                        );
                       }
-                    },
-                    child: Text(
-                      'test me',
-                      style: TextStyle(color: Colors.white, fontSize: 20),
-                    ),
+
+                      final prefs = await SharedPreferences.getInstance();
+
+                      prefs.setInt('wordsCommitted', usersDataNotifier.wordsCommitted);
+                      prefs.setInt('successRememberedWordsNum', usersDataNotifier.successRememberedWordsNum);
+
+                      List<String> data = List();
+                      usersDataNotifier.wordList.forEach((element) {
+                        data.add(element.toString());
+                        print(element.toString());
+                      });
+                      prefs.setStringList('words', data);
+
+                      currentTestingWord = getWordNumToTest(usersDataNotifier);
+                      if (currentTestingWord == -1) {
+                        usersDataNotifier.currentDayToRemember =
+                            usersDataNotifier.toRememberWordsNum;
+                        prefs.setInt('currentDayToRemember',
+                            usersDataNotifier.currentDayToRemember);
+                        prefs.remove('lastCommitDate');
+                        screenNotifier.currentScreen = Screen.COMMIT_SCREEN;
+                      }
+
+                      setState(() {});
+                    }
+                  },
+                  child: Text(
+                    'test me',
+                    style: TextStyle(color: Colors.white, fontSize: 30),
                   ),
                 ),
               ),
