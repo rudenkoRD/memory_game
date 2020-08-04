@@ -93,6 +93,8 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
         await showDialog<String>(
           context: context,
           builder: (BuildContext context) => new AlertDialog(
+            contentPadding: EdgeInsets.all(0),
+            insetPadding: EdgeInsets.all(0),
             content: SingleChildScrollView(
               child: Image.asset('assets/images/${usersDataNotifier.wordList[currentWord].displayFileName}'),
             ),
@@ -182,7 +184,7 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
                       Container(
                         padding: EdgeInsets.all(2),
                         child: Text(
-                            '${usersDataNotifier.wordsCommitted.toString().length == 4 ? usersDataNotifier.wordsCommitted.toString()[3] : 0}'),
+                            '${usersDataNotifier.wordsCommitted.toString().length == 4 ? usersDataNotifier.wordsCommitted.toString()[usersDataNotifier.wordsCommitted.toString().length-4] : 0}'),
                         decoration: BoxDecoration(
                           border: Border(
                             top: BorderSide(color: Colors.white),
@@ -195,7 +197,7 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
                       Container(
                         padding: EdgeInsets.all(2),
                         child: Text(
-                            '${usersDataNotifier.wordsCommitted.toString().length >= 3 ? usersDataNotifier.wordsCommitted.toString()[2] : 0}'),
+                            '${usersDataNotifier.wordsCommitted.toString().length >= 3 ? usersDataNotifier.wordsCommitted.toString()[usersDataNotifier.wordsCommitted.toString().length-3] : 0}'),
                         decoration: BoxDecoration(
                           border: Border(
                             top: BorderSide(color: Colors.white),
@@ -206,7 +208,7 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
                       Container(
                         padding: EdgeInsets.all(2),
                         child: Text(
-                            '${usersDataNotifier.wordsCommitted.toString().length >= 2 ? usersDataNotifier.wordsCommitted.toString()[1] : 0}'),
+                            '${usersDataNotifier.wordsCommitted.toString().length >= 2 ? usersDataNotifier.wordsCommitted.toString()[usersDataNotifier.wordsCommitted.toString().length-2] : 0}'),
                         decoration: BoxDecoration(
                           border: Border(
                             top: BorderSide(color: Colors.white),
@@ -218,7 +220,7 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
                       Container(
                         padding: EdgeInsets.all(2),
                         child: Text(
-                            '${usersDataNotifier.wordsCommitted.toString().length >= 1 ? usersDataNotifier.wordsCommitted.toString()[0] : 0}'),
+                            '${usersDataNotifier.wordsCommitted.toString().length >= 1 ? usersDataNotifier.wordsCommitted.toString()[usersDataNotifier.wordsCommitted.toString().length-1] : 0}'),
                         decoration: BoxDecoration(
                           border: Border(
                             top: BorderSide(color: Colors.white),
