@@ -39,8 +39,7 @@ class _TestingScreenState extends State<TestingScreen> {
     super.initState();
   }
 
-  checkDay() {
-    DateTime lastCommitDate = DateTime.fromMillisecondsSinceEpoch(widget.lastCommitDateTime);
+  checkDay(lastCommitDate) {
 
     if (lastCommitDate.difference(DateTime.now()).inDays == 0){
       WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -72,7 +71,19 @@ class _TestingScreenState extends State<TestingScreen> {
       currentTestingWord = getWordNumToTest(usersDataNotifier);
     }
 
-    checkDay();
+    DateTime lastCommitDate = DateTime.fromMillisecondsSinceEpoch(widget.lastCommitDateTime);
+    checkDay(lastCommitDate);
+
+    if (lastCommitDate.difference(DateTime.now()).inDays == 0){
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('Testing'),
+        ),
+        body: Container(
+          color: Colors.white,
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
