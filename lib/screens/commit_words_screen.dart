@@ -98,53 +98,57 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
               contentPadding: EdgeInsets.all(0),
               insetPadding: EdgeInsets.all(0),
               content: SingleChildScrollView(
-                child: Image.asset('assets/images/${usersDataNotifier.wordList[currentWord].displayFileName}'),
-              ),
-              actions: <Widget>[
-                RaisedButton(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                  onPressed: () async {
-                    Navigator.of(context).pop();
-                    final prefs = await SharedPreferences.getInstance();
-                    usersDataNotifier.wordsCommitted++;
-                    usersDataNotifier.wordList[currentWord].mempool = 1;
-                    usersDataNotifier.currentDayToRemember--;
-                    rememberedWords = usersDataNotifier.toRememberWordsNum -
-                        usersDataNotifier.currentDayToRemember;
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Image.asset('assets/images/${usersDataNotifier.wordList[currentWord].displayFileName}'),
+                    RaisedButton(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      onPressed: () async {
+                        Navigator.of(context).pop();
+                        final prefs = await SharedPreferences.getInstance();
+                        usersDataNotifier.wordsCommitted++;
+                        usersDataNotifier.wordList[currentWord].mempool = 1;
+                        usersDataNotifier.currentDayToRemember--;
+                        rememberedWords = usersDataNotifier.toRememberWordsNum -
+                            usersDataNotifier.currentDayToRemember;
 
-                    List<String> data = List();
-                    usersDataNotifier.wordList.forEach((element) {
-                      data.add(element.toString());
-                      print(element.toString());
-                    });
-                    prefs.setStringList('words', data);
-                    prefs.setInt('successRememberedWordsNum',
-                        usersDataNotifier.successRememberedWordsNum);
-                    prefs.setInt(
-                        'wordsCommitted', usersDataNotifier.wordsCommitted);
-                    prefs.setInt('currentDayToRemember',
-                        usersDataNotifier.currentDayToRemember);
-                    prefs.setInt('toRememberWordsNum',
-                        usersDataNotifier.toRememberWordsNum);
+                        List<String> data = List();
+                        usersDataNotifier.wordList.forEach((element) {
+                          data.add(element.toString());
+                          print(element.toString());
+                        });
+                        prefs.setStringList('words', data);
+                        prefs.setInt('successRememberedWordsNum',
+                            usersDataNotifier.successRememberedWordsNum);
+                        prefs.setInt(
+                            'wordsCommitted', usersDataNotifier.wordsCommitted);
+                        prefs.setInt('currentDayToRemember',
+                            usersDataNotifier.currentDayToRemember);
+                        prefs.setInt('toRememberWordsNum',
+                            usersDataNotifier.toRememberWordsNum);
 
-                    currentWord = getWordNumToRemember(usersDataNotifier);
+                        currentWord = getWordNumToRemember(usersDataNotifier);
 
-                    if(usersDataNotifier.currentDayToRemember <= 0 || (currentWord == -1 && rememberedWords > 0)){
-                      DateTime date = DateTime.now();
-                      prefs.setInt('lastCommitDate', date.millisecondsSinceEpoch);
-                    }
+                        if(usersDataNotifier.currentDayToRemember <= 0 || (currentWord == -1 && rememberedWords > 0)){
+                          DateTime date = DateTime.now();
+                          prefs.setInt('lastCommitDate', date.millisecondsSinceEpoch);
+                        }
 
-                    setState(() {
+                        setState(() {
 
-                    });
-                  },
-                  child: Text(
-                    'Click when committed',
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
+                        });
+                      },
+                      child: Text(
+                        'Click when committed',
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         );
