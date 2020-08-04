@@ -12,6 +12,7 @@ class TestingScreen extends StatefulWidget {
   final int lastCommitDateTime;
 
   const TestingScreen({Key key, this.lastCommitDateTime}) : super(key: key);
+
   @override
   _TestingScreenState createState() => _TestingScreenState();
 }
@@ -26,8 +27,10 @@ class _TestingScreenState extends State<TestingScreen> {
 
   int getWordNumToTest(UsersDataNotifier userData) {
     for (int i = 0; i < userData.wordList.length; i++) {
-      print('${userData.wordList[i].isMemorized} ${userData.wordList[i].mempool} data');
-      if (userData.wordList[i].isMemorized == false && userData.wordList[i].mempool == 1) {
+      print(
+          '${userData.wordList[i].isMemorized} ${userData.wordList[i].mempool} data');
+      if (userData.wordList[i].isMemorized == false &&
+          userData.wordList[i].mempool == 1) {
         return i;
       }
     }
@@ -35,31 +38,35 @@ class _TestingScreenState extends State<TestingScreen> {
   }
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
   }
 
   checkDay(lastCommitDate) {
-
-    if (lastCommitDate.difference(DateTime.now()).inDays == 0){
+    if (lastCommitDate.difference(DateTime.now()).inDays == 0) {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
-        await showDialog(context: context, builder: (context) =>  WillPopScope(
-          onWillPop: () async => false,
-          child: AlertDialog(
-            title: Text('You have to wait till the next day to test yourself'),
-            actions: <Widget>[
-              FlatButton(
-                onPressed: () {
-                  exit(0);
-                },
-                child: Text('ok, leave an app', style: TextStyle(color: Colors.white),),
-                color: Colors.green,
-              ),
-            ],
-          ),
-        ));
-      }
-      );
+        await showDialog(
+            context: context,
+            builder: (context) => WillPopScope(
+                  onWillPop: () async => false,
+                  child: AlertDialog(
+                    title: Text(
+                        'You have to wait till the next day to test yourself'),
+                    actions: <Widget>[
+                      FlatButton(
+                        onPressed: () {
+                          exit(0);
+                        },
+                        child: Text(
+                          'ok, leave an app',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        color: Colors.green,
+                      ),
+                    ],
+                  ),
+                ));
+      });
     }
   }
 
@@ -71,10 +78,11 @@ class _TestingScreenState extends State<TestingScreen> {
       currentTestingWord = getWordNumToTest(usersDataNotifier);
     }
 
-    DateTime lastCommitDate = DateTime.fromMillisecondsSinceEpoch(widget.lastCommitDateTime);
+    DateTime lastCommitDate =
+        DateTime.fromMillisecondsSinceEpoch(widget.lastCommitDateTime);
     checkDay(lastCommitDate);
 
-    if (lastCommitDate.difference(DateTime.now()).inDays == 0){
+    if (lastCommitDate.difference(DateTime.now()).inDays == 0) {
       return Scaffold(
         appBar: AppBar(
           title: Text('Testing'),
@@ -160,32 +168,42 @@ class _TestingScreenState extends State<TestingScreen> {
                       answerFormState.currentState.reset();
 
                       if (currentAnswer.trim().toLowerCase() ==
-                          usersDataNotifier.wordList[currentTestingWord].firstValue.toString().trim().toLowerCase()) {
+                          usersDataNotifier
+                              .wordList[currentTestingWord].firstValue
+                              .toString()
+                              .trim()
+                              .toLowerCase()) {
                         Scaffold.of(context).showSnackBar(
                           SnackBar(
                             backgroundColor: Colors.green,
-                            content: Text('Well done'),
+                            content: Text('Well done', style: TextStyle(fontSize: 25,), textAlign: TextAlign.center,),
                           ),
                         );
 
-                        usersDataNotifier.wordList[currentTestingWord].isMemorized = true;
+                        usersDataNotifier
+                            .wordList[currentTestingWord].isMemorized = true;
                         usersDataNotifier.successRememberedWordsNum++;
-                        usersDataNotifier.wordList[currentTestingWord].mempool = 0;
+                        usersDataNotifier.wordList[currentTestingWord].mempool =
+                            0;
                       } else {
                         usersDataNotifier.wordsCommitted--;
-                        usersDataNotifier.wordList[currentTestingWord].mempool = 0;
+                        usersDataNotifier.wordList[currentTestingWord].mempool =
+                            0;
                         Scaffold.of(context).showSnackBar(
                           SnackBar(
                             backgroundColor: Colors.red,
-                            content: Text('Oops that\'s not right'),
+                            content: Text('Oops that\'s not right',
+                                style: TextStyle(fontSize: 25),textAlign: TextAlign.center,),
                           ),
                         );
                       }
 
                       final prefs = await SharedPreferences.getInstance();
 
-                      prefs.setInt('wordsCommitted', usersDataNotifier.wordsCommitted);
-                      prefs.setInt('successRememberedWordsNum', usersDataNotifier.successRememberedWordsNum);
+                      prefs.setInt(
+                          'wordsCommitted', usersDataNotifier.wordsCommitted);
+                      prefs.setInt('successRememberedWordsNum',
+                          usersDataNotifier.successRememberedWordsNum);
 
                       List<String> data = List();
                       usersDataNotifier.wordList.forEach((element) {
