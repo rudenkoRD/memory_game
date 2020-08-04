@@ -27,12 +27,11 @@ class _TestingScreenState extends State<TestingScreen> {
   int getWordNumToTest(UsersDataNotifier userData) {
     for (int i = 0; i < userData.wordList.length; i++) {
       print('${userData.wordList[i].isMemorized} ${userData.wordList[i].mempool} data');
-      if (userData.wordList[i].isMemorized == false && userData.wordList[i].mempool == 1 && currentTestingWord != i) {
+      if (userData.wordList[i].isMemorized == false && userData.wordList[i].mempool == 1) {
         return i;
       }
     }
-    if(userData.wordList[currentTestingWord].isMemorized) return -1;
-    else return currentTestingWord;
+    return -1;
   }
 
   @override
@@ -158,12 +157,12 @@ class _TestingScreenState extends State<TestingScreen> {
                             ),
                           );
 
-                          usersDataNotifier
-                              .wordList[currentTestingWord].isMemorized = true;
+                          usersDataNotifier.wordList[currentTestingWord].isMemorized = true;
                           usersDataNotifier.successRememberedWordsNum++;
-                          usersDataNotifier.wordList[currentTestingWord].mempool =
-                              0;
+                          usersDataNotifier.wordList[currentTestingWord].mempool = 0;
                         } else {
+                          usersDataNotifier.wordsCommitted--;
+                          usersDataNotifier.wordList[currentTestingWord].mempool = 0;
                           Scaffold.of(context).showSnackBar(
                             SnackBar(
                               backgroundColor: Colors.red,
@@ -173,6 +172,9 @@ class _TestingScreenState extends State<TestingScreen> {
                         }
 
                         final prefs = await SharedPreferences.getInstance();
+
+                        prefs.setInt('wordsCommitted', usersDataNotifier.wordsCommitted);
+                        prefs.setInt('successRememberedWordsNum', usersDataNotifier.successRememberedWordsNum);
 
                         List<String> data = List();
                         usersDataNotifier.wordList.forEach((element) {
