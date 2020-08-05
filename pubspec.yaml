@@ -53,6 +53,7 @@ flutter:
   assets:
     - assets/database/databasetest1.csv
     - assets/images/
+    - assets/images/main_text_images/
     - assets/audio/
 
   # An image asset can refer to one or more resolution-specific "variants", see

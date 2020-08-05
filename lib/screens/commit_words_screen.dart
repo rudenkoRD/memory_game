@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:audioplayers/audio_cache.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:memory_game/notifiers/users_data_notifier.dart';
@@ -34,11 +35,15 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
     usersDataNotifier = Provider.of<UsersDataNotifier>(context);
     rememberedWords = usersDataNotifier.toRememberWordsNum -
         usersDataNotifier.currentDayToRemember;
-    if (currentWord == -1) currentWord = getWordNumToRemember(usersDataNotifier);
+    if (currentWord == -1)
+      currentWord = getWordNumToRemember(usersDataNotifier);
 
-    if (usersDataNotifier.currentDayToRemember <= 0 || (currentWord == -1 && rememberedWords > 0)) {
+    if (usersDataNotifier.currentDayToRemember <= 0 ||
+        (currentWord == -1 && rememberedWords > 0)) {
       return Scaffold(
-        appBar: AppBar(title: Text('Commit words'),),
+        appBar: AppBar(
+          title: Text('Commit words'),
+        ),
         body: Container(
           padding: EdgeInsets.all(10),
           color: Colors.white,
@@ -46,12 +51,19 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Text('That\'s the end of memorizing today, see you tomorrow!', style: TextStyle(fontSize: 20),textAlign: TextAlign.center,),
+                Text(
+                  'That\'s the end of memorizing today, see you tomorrow!',
+                  style: TextStyle(fontSize: 20),
+                  textAlign: TextAlign.center,
+                ),
                 FlatButton(
                   onPressed: () {
                     exit(0);
                   },
-                  child: Text('ok, leave an app', style: TextStyle(color: Colors.white),),
+                  child: Text(
+                    'ok, leave an app',
+                    style: TextStyle(color: Colors.white),
+                  ),
                   color: Colors.green,
                 ),
               ],
@@ -61,9 +73,11 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
       );
     }
 
-    if(currentWord == -1 && rememberedWords == 0){
+    if (currentWord == -1 && rememberedWords == 0) {
       return Scaffold(
-        appBar: AppBar(title: Text('Commit words'),),
+        appBar: AppBar(
+          title: Text('Commit words'),
+        ),
         body: Container(
           padding: EdgeInsets.all(10),
           color: Colors.white,
@@ -71,12 +85,19 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Text('You have learned all words!', style: TextStyle(fontSize: 20),textAlign: TextAlign.center,),
+                Text(
+                  'You have learned all words!',
+                  style: TextStyle(fontSize: 20),
+                  textAlign: TextAlign.center,
+                ),
                 FlatButton(
                   onPressed: () {
                     exit(0);
                   },
-                  child: Text('ok, leave an app', style: TextStyle(color: Colors.white),),
+                  child: Text(
+                    'ok, leave an app',
+                    style: TextStyle(color: Colors.white),
+                  ),
                   color: Colors.green,
                 ),
               ],
@@ -86,7 +107,9 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
       );
     }
 
-    if(usersDataNotifier.wordList[currentWord].displayFileName.toString().isNotEmpty){
+    if (usersDataNotifier.wordList[currentWord].displayFileName
+        .toString()
+        .isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         audioCache.play(
             'audio/${usersDataNotifier.wordList[currentWord].displayAudioName}');
@@ -102,7 +125,8 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    Image.asset('assets/images/${usersDataNotifier.wordList[currentWord].displayFileName}'),
+                    Image.asset(
+                        'assets/images/${usersDataNotifier.wordList[currentWord].displayFileName}'),
                     RaisedButton(
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10)),
@@ -132,14 +156,14 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
 
                         currentWord = getWordNumToRemember(usersDataNotifier);
 
-                        if(usersDataNotifier.currentDayToRemember <= 0 || (currentWord == -1 && rememberedWords > 0)){
+                        if (usersDataNotifier.currentDayToRemember <= 0 ||
+                            (currentWord == -1 && rememberedWords > 0)) {
                           DateTime date = DateTime.now();
-                          prefs.setInt('lastCommitDate', date.millisecondsSinceEpoch);
+                          prefs.setInt(
+                              'lastCommitDate', date.millisecondsSinceEpoch);
                         }
 
-                        setState(() {
-
-                        });
+                        setState(() {});
                       },
                       child: Text(
                         'Click when committed',
@@ -191,7 +215,7 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
                       Container(
                         padding: EdgeInsets.all(2),
                         child: Text(
-                            '${usersDataNotifier.wordsCommitted.toString().length == 4 ? usersDataNotifier.wordsCommitted.toString()[usersDataNotifier.wordsCommitted.toString().length-4] : 0}'),
+                            '${usersDataNotifier.wordsCommitted.toString().length == 4 ? usersDataNotifier.wordsCommitted.toString()[usersDataNotifier.wordsCommitted.toString().length - 4] : 0}'),
                         decoration: BoxDecoration(
                           border: Border(
                             top: BorderSide(color: Colors.white),
@@ -204,7 +228,7 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
                       Container(
                         padding: EdgeInsets.all(2),
                         child: Text(
-                            '${usersDataNotifier.wordsCommitted.toString().length >= 3 ? usersDataNotifier.wordsCommitted.toString()[usersDataNotifier.wordsCommitted.toString().length-3] : 0}'),
+                            '${usersDataNotifier.wordsCommitted.toString().length >= 3 ? usersDataNotifier.wordsCommitted.toString()[usersDataNotifier.wordsCommitted.toString().length - 3] : 0}'),
                         decoration: BoxDecoration(
                           border: Border(
                             top: BorderSide(color: Colors.white),
@@ -215,7 +239,7 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
                       Container(
                         padding: EdgeInsets.all(2),
                         child: Text(
-                            '${usersDataNotifier.wordsCommitted.toString().length >= 2 ? usersDataNotifier.wordsCommitted.toString()[usersDataNotifier.wordsCommitted.toString().length-2] : 0}'),
+                            '${usersDataNotifier.wordsCommitted.toString().length >= 2 ? usersDataNotifier.wordsCommitted.toString()[usersDataNotifier.wordsCommitted.toString().length - 2] : 0}'),
                         decoration: BoxDecoration(
                           border: Border(
                             top: BorderSide(color: Colors.white),
@@ -227,7 +251,7 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
                       Container(
                         padding: EdgeInsets.all(2),
                         child: Text(
-                            '${usersDataNotifier.wordsCommitted.toString().length >= 1 ? usersDataNotifier.wordsCommitted.toString()[usersDataNotifier.wordsCommitted.toString().length-1] : 0}'),
+                            '${usersDataNotifier.wordsCommitted.toString().length >= 1 ? usersDataNotifier.wordsCommitted.toString()[usersDataNotifier.wordsCommitted.toString().length - 1] : 0}'),
                         decoration: BoxDecoration(
                           border: Border(
                             top: BorderSide(color: Colors.white),
@@ -246,12 +270,15 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
                           .then((value) async {
                         if (value != null) {
                           usersDataNotifier.toRememberWordsNum = value;
-                          if(usersDataNotifier.currentDayToRemember < value) {
-                            usersDataNotifier.currentDayToRemember = value - rememberedWords;
+                          if (usersDataNotifier.currentDayToRemember < value) {
+                            usersDataNotifier.currentDayToRemember =
+                                value - rememberedWords;
                           }
                           final prefs = await SharedPreferences.getInstance();
-                          prefs.setInt('toRememberWordsNum', usersDataNotifier.toRememberWordsNum);
-                          prefs.setInt('currentDayToRemember', usersDataNotifier.currentDayToRemember);
+                          prefs.setInt('toRememberWordsNum',
+                              usersDataNotifier.toRememberWordsNum);
+                          prefs.setInt('currentDayToRemember',
+                              usersDataNotifier.currentDayToRemember);
                         }
                       });
                     },
@@ -274,6 +301,7 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
                     flex: topFlex,
                     child: Container(
                       child: Row(
+                        mainAxisSize: MainAxisSize.max,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: <Widget>[
@@ -288,13 +316,15 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
                                 height: 5,
                               ),
                               Container(
+                                width: MediaQuery.of(context).size.width / 4,
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 8.0, vertical: 4.0),
-                                child: Text(
+                                child: AutoSizeText(
                                   '${usersDataNotifier.wordsCommitted}',
                                   style: TextStyle(
                                     fontSize: 25,
                                   ),
+                                  textAlign: TextAlign.center,
                                 ),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10),
@@ -311,13 +341,15 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
                                 height: 12,
                               ),
                               Container(
+                                width: MediaQuery.of(context).size.width / 4,
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 8.0, vertical: 4.0),
-                                child: Text(
+                                child: AutoSizeText(
                                   '${usersDataNotifier.totalNumOfWords - usersDataNotifier.wordsCommitted}',
                                   style: TextStyle(
                                     fontSize: 25,
                                   ),
+                                  textAlign: TextAlign.center,
                                 ),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10),
@@ -338,10 +370,12 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
-                    Text(
-                      '${usersDataNotifier.wordList[currentWord].mainText}',
-                      style: TextStyle(fontSize: 40, fontFamily: 'MSyahei'),
-                    ),
+//                    Text(
+//                      '${usersDataNotifier.wordList[currentWord].mainText}',
+//                      style: TextStyle(fontSize: 40, fontFamily: 'MSyahei'),
+//                    ),
+                    Image.asset(
+                        'assets/images/main_text_images/${usersDataNotifier.wordList[currentWord].mainText}'),
                     Text(
                       '${usersDataNotifier.wordList[currentWord].firstValue}',
                       style: TextStyle(fontSize: 18, fontFamily: 'MSyahei'),
@@ -369,7 +403,6 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
                     rememberedWords = usersDataNotifier.toRememberWordsNum -
                         usersDataNotifier.currentDayToRemember;
 
-
                     List<String> data = List();
                     usersDataNotifier.wordList.forEach((element) {
                       data.add(element.toString());
@@ -387,14 +420,14 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
 
                     currentWord = getWordNumToRemember(usersDataNotifier);
 
-                    if(usersDataNotifier.currentDayToRemember <= 0 || (currentWord == -1 && rememberedWords > 0)){
+                    if (usersDataNotifier.currentDayToRemember <= 0 ||
+                        (currentWord == -1 && rememberedWords > 0)) {
                       DateTime date = DateTime.now();
-                      prefs.setInt('lastCommitDate', date.millisecondsSinceEpoch);
+                      prefs.setInt(
+                          'lastCommitDate', date.millisecondsSinceEpoch);
                     }
 
-                    setState(() {
-
-                    });
+                    setState(() {});
                   },
                   child: Text(
                     'Click when committed',
