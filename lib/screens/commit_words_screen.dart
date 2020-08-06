@@ -1,9 +1,10 @@
 import 'dart:io';
 import 'package:audioplayers/audio_cache.dart';
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:memory_game/notifiers/users_data_notifier.dart';
+import 'package:memory_game/widgets/counter_widget.dart';
+import 'package:memory_game/widgets/outline_border_counter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -13,10 +14,13 @@ class CommitWordsScreen extends StatefulWidget {
 }
 
 class _CommitWordsScreenState extends State<CommitWordsScreen> {
-  UsersDataNotifier usersDataNotifier;
+  UsersDataNotifier userData;
   int topFlex = 2;
   int middleFlex = 6;
   int currentWord = -1;
+
+  int currentWordToRefreshInMemory;
+
   int rememberedWords;
   AudioCache audioCache = AudioCache();
 
@@ -30,15 +34,24 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
     return -1;
   }
 
+  int getCurrentWordToRefreshInMemory(){
+    for(int i = 0; i < userData.wordList.length; i++){
+      if(userData.wordList[i].giw == 'w') return i;
+    }
+    return -1;
+  }
+
   @override
   Widget build(BuildContext context) {
-    usersDataNotifier = Provider.of<UsersDataNotifier>(context);
-    rememberedWords = usersDataNotifier.toRememberWordsNum -
-        usersDataNotifier.currentDayToRemember;
-    if (currentWord == -1)
-      currentWord = getWordNumToRemember(usersDataNotifier);
+    userData = Provider.of<UsersDataNotifier>(context);
+    rememberedWords = userData.toRememberWordsNum - userData.currentDayToRemember;
 
-    if (usersDataNotifier.currentDayToRemember <= 0 ||
+    if (currentWord == -1) currentWord = getWordNumToRemember(userData);
+    if(currentWordToRefreshInMemory == null) currentWordToRefreshInMemory = getCurrentWordToRefreshInMemory();
+    if(currentWordToRefreshInMemory != -1) currentWord = currentWordToRefreshInMemory;
+
+
+    if (userData.currentDayToRemember <= 0 ||
         (currentWord == -1 && rememberedWords > 0)) {
       return Scaffold(
         appBar: AppBar(
@@ -107,12 +120,12 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
       );
     }
 
-    if (usersDataNotifier.wordList[currentWord].displayFileName
+    if (userData.wordList[currentWord].displayFileName
         .toString()
         .isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         audioCache.play(
-            'audio/${usersDataNotifier.wordList[currentWord].displayAudioName}');
+            'audio/${userData.wordList[currentWord].displayAudioName}');
         await showDialog<String>(
           context: context,
           builder: (BuildContext context) => WillPopScope(
@@ -126,37 +139,37 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     Image.asset(
-                        'assets/images/${usersDataNotifier.wordList[currentWord].displayFileName}'),
+                        'assets/images/display_images/${userData.wordList[currentWord].displayFileName}'),
                     RaisedButton(
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10)),
                       onPressed: () async {
                         Navigator.of(context).pop();
                         final prefs = await SharedPreferences.getInstance();
-                        usersDataNotifier.wordsCommitted++;
-                        usersDataNotifier.wordList[currentWord].mempool = 1;
-                        usersDataNotifier.currentDayToRemember--;
-                        rememberedWords = usersDataNotifier.toRememberWordsNum -
-                            usersDataNotifier.currentDayToRemember;
+                        userData.wordsCommitted++;
+                        userData.wordList[currentWord].mempool = 1;
+                        userData.currentDayToRemember--;
+                        rememberedWords = userData.toRememberWordsNum -
+                            userData.currentDayToRemember;
 
                         List<String> data = List();
-                        usersDataNotifier.wordList.forEach((element) {
+                        userData.wordList.forEach((element) {
                           data.add(element.toString());
                           print(element.toString());
                         });
                         prefs.setStringList('words', data);
                         prefs.setInt('successRememberedWordsNum',
-                            usersDataNotifier.successRememberedWordsNum);
+                            userData.successRememberedWordsNum);
                         prefs.setInt(
-                            'wordsCommitted', usersDataNotifier.wordsCommitted);
+                            'wordsCommitted', userData.wordsCommitted);
                         prefs.setInt('currentDayToRemember',
-                            usersDataNotifier.currentDayToRemember);
+                            userData.currentDayToRemember);
                         prefs.setInt('toRememberWordsNum',
-                            usersDataNotifier.toRememberWordsNum);
+                            userData.toRememberWordsNum);
 
-                        currentWord = getWordNumToRemember(usersDataNotifier);
+                        currentWord = getWordNumToRemember(userData);
 
-                        if (usersDataNotifier.currentDayToRemember <= 0 ||
+                        if (userData.currentDayToRemember <= 0 ||
                             (currentWord == -1 && rememberedWords > 0)) {
                           DateTime date = DateTime.now();
                           prefs.setInt(
@@ -191,94 +204,44 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
                 FlatButton(
                   onPressed: () {
                     audioCache.play(
-                        'audio/${usersDataNotifier.wordList[currentWord].audioFileName}');
+                        'audio/${userData.wordList[currentWord].audioFileName}');
                   },
                   child: Icon(Icons.hearing, color: Colors.white),
                 ),
                 InkWell(
-                  onTap: () {
-                    if (topFlex == 2) {
-                      setState(() {
-                        topFlex = 0;
-                        middleFlex = 8;
-                      });
-                    } else {
-                      setState(() {
-                        topFlex = 2;
-                        middleFlex = 6;
-                      });
-                    }
-                  },
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Container(
-                        padding: EdgeInsets.all(2),
-                        child: Text(
-                            '${usersDataNotifier.wordsCommitted.toString().length == 4 ? usersDataNotifier.wordsCommitted.toString()[usersDataNotifier.wordsCommitted.toString().length - 4] : 0}'),
-                        decoration: BoxDecoration(
-                          border: Border(
-                            top: BorderSide(color: Colors.white),
-                            bottom: BorderSide(color: Colors.white),
-                            left: BorderSide(color: Colors.white),
-                            right: BorderSide(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(2),
-                        child: Text(
-                            '${usersDataNotifier.wordsCommitted.toString().length >= 3 ? usersDataNotifier.wordsCommitted.toString()[usersDataNotifier.wordsCommitted.toString().length - 3] : 0}'),
-                        decoration: BoxDecoration(
-                          border: Border(
-                            top: BorderSide(color: Colors.white),
-                            bottom: BorderSide(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(2),
-                        child: Text(
-                            '${usersDataNotifier.wordsCommitted.toString().length >= 2 ? usersDataNotifier.wordsCommitted.toString()[usersDataNotifier.wordsCommitted.toString().length - 2] : 0}'),
-                        decoration: BoxDecoration(
-                          border: Border(
-                            top: BorderSide(color: Colors.white),
-                            left: BorderSide(color: Colors.white),
-                            bottom: BorderSide(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(2),
-                        child: Text(
-                            '${usersDataNotifier.wordsCommitted.toString().length >= 1 ? usersDataNotifier.wordsCommitted.toString()[usersDataNotifier.wordsCommitted.toString().length - 1] : 0}'),
-                        decoration: BoxDecoration(
-                          border: Border(
-                            top: BorderSide(color: Colors.white),
-                            bottom: BorderSide(color: Colors.white),
-                            right: BorderSide(color: Colors.white),
-                            left: BorderSide(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                    onTap: () {
+                      if(currentWordToRefreshInMemory != -1) return;
+
+                      if (topFlex == 2) {
+                        setState(() {
+                          topFlex = 0;
+                          middleFlex = 8;
+                        });
+                      } else {
+                        setState(() {
+                          topFlex = 2;
+                          middleFlex = 6;
+                        });
+                      }
+                    },
+                    child: CounterWidget(
+                      numberToShow: userData.wordsCommitted.toString(),
+                    )),
                 FlatButton(
                     onPressed: () {
                       _showSelectingPerDayNumOfCommit(context)
                           .then((value) async {
                         if (value != null) {
-                          usersDataNotifier.toRememberWordsNum = value;
-                          if (usersDataNotifier.currentDayToRemember < value) {
-                            usersDataNotifier.currentDayToRemember =
+                          userData.toRememberWordsNum = value;
+                          if (userData.currentDayToRemember < value) {
+                            userData.currentDayToRemember =
                                 value - rememberedWords;
                           }
                           final prefs = await SharedPreferences.getInstance();
                           prefs.setInt('toRememberWordsNum',
-                              usersDataNotifier.toRememberWordsNum);
+                              userData.toRememberWordsNum);
                           prefs.setInt('currentDayToRemember',
-                              usersDataNotifier.currentDayToRemember);
+                              userData.currentDayToRemember);
                         }
                       });
                     },
@@ -296,7 +259,11 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            topFlex == 2
+
+            currentWordToRefreshInMemory != -1 ? Expanded(
+              flex: 2,
+              child: Center(child: Text('Refresh old words in memory', textAlign: TextAlign.center, style: TextStyle(fontSize: 30))),
+            ) : topFlex == 2
                 ? Expanded(
                     flex: topFlex,
                     child: Container(
@@ -305,58 +272,14 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: <Widget>[
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: <Widget>[
-                              Text(
-                                'Words committed\nto memory',
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              Container(
-                                width: MediaQuery.of(context).size.width / 4,
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 8.0, vertical: 4.0),
-                                child: AutoSizeText(
-                                  '${usersDataNotifier.wordsCommitted}',
-                                  style: TextStyle(
-                                    fontSize: 25,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(),
-                                ),
-                              ),
-                            ],
+                          OutlineBorderCounter(
+                            label: 'Words committed\nto memory',
+                            numberToShow:
+                                userData.wordsCommitted,
                           ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: <Widget>[
-                              Text('Words left'),
-                              SizedBox(
-                                height: 12,
-                              ),
-                              Container(
-                                width: MediaQuery.of(context).size.width / 4,
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 8.0, vertical: 4.0),
-                                child: AutoSizeText(
-                                  '${usersDataNotifier.totalNumOfWords - usersDataNotifier.wordsCommitted}',
-                                  style: TextStyle(
-                                    fontSize: 25,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(),
-                                ),
-                              ),
-                            ],
+                          OutlineBorderCounter(
+                            label: 'Words left',
+                            numberToShow: userData.totalNumOfWords - userData.wordsCommitted,
                           ),
                         ],
                       ),
@@ -375,13 +298,13 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
 //                      style: TextStyle(fontSize: 40, fontFamily: 'MSyahei'),
 //                    ),
                     Image.asset(
-                        'assets/images/main_text_images/${usersDataNotifier.wordList[currentWord].mainText}'),
+                        'assets/images/main_text_images/${userData.wordList[currentWord].mainText}'),
                     Text(
-                      '${usersDataNotifier.wordList[currentWord].firstValue}',
+                      '${userData.wordList[currentWord].firstValue}',
                       style: TextStyle(fontSize: 18, fontFamily: 'MSyahei'),
                     ),
                     Text(
-                      '${usersDataNotifier.wordList[currentWord].secondValue}',
+                      '${userData.wordList[currentWord].secondValue}',
                       style: TextStyle(fontSize: 18, fontFamily: 'MSyahei'),
                     ),
                   ],
@@ -397,34 +320,57 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
                       borderRadius: BorderRadius.circular(10)),
                   onPressed: () async {
                     final prefs = await SharedPreferences.getInstance();
-                    usersDataNotifier.wordsCommitted++;
-                    usersDataNotifier.wordList[currentWord].mempool = 1;
-                    usersDataNotifier.currentDayToRemember--;
-                    rememberedWords = usersDataNotifier.toRememberWordsNum -
-                        usersDataNotifier.currentDayToRemember;
+
+                    userData.wordsCommitted++;
+
+                    if(currentWordToRefreshInMemory != -1) {
+                     userData.wordList[currentWordToRefreshInMemory].giw = '0';
+
+                     List<String> data = List();
+                     userData.wordList.forEach((element) {
+                       data.add(element.toString());
+                       print(element.toString());
+                     });
+                     prefs.setStringList('words', data);
+
+                     currentWordToRefreshInMemory = getCurrentWordToRefreshInMemory();
+                     if(currentWordToRefreshInMemory == -1){
+                       currentWord = getWordNumToRemember(userData);
+                     }else currentWord = currentWordToRefreshInMemory;
+
+                     setState(() {});
+
+                     return;
+                    }
+
+                    userData.wordList[currentWord].mempool = 1;
+                    userData.currentDayToRemember--;
+                    rememberedWords = userData.toRememberWordsNum -
+                        userData.currentDayToRemember;
 
                     List<String> data = List();
-                    usersDataNotifier.wordList.forEach((element) {
+                    userData.wordList.forEach((element) {
                       data.add(element.toString());
                       print(element.toString());
                     });
                     prefs.setStringList('words', data);
                     prefs.setInt('successRememberedWordsNum',
-                        usersDataNotifier.successRememberedWordsNum);
+                        userData.successRememberedWordsNum);
                     prefs.setInt(
-                        'wordsCommitted', usersDataNotifier.wordsCommitted);
+                        'wordsCommitted', userData.wordsCommitted);
                     prefs.setInt('currentDayToRemember',
-                        usersDataNotifier.currentDayToRemember);
+                        userData.currentDayToRemember);
                     prefs.setInt('toRememberWordsNum',
-                        usersDataNotifier.toRememberWordsNum);
+                        userData.toRememberWordsNum);
 
-                    currentWord = getWordNumToRemember(usersDataNotifier);
+                    currentWord = getWordNumToRemember(userData);
 
-                    if (usersDataNotifier.currentDayToRemember <= 0 ||
+                    if (userData.currentDayToRemember <= 0 ||
                         (currentWord == -1 && rememberedWords > 0)) {
                       DateTime date = DateTime.now();
                       prefs.setInt(
                           'lastCommitDate', date.millisecondsSinceEpoch);
+
                     }
 
                     setState(() {});

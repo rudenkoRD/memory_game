@@ -14,5 +14,6 @@ class ScreenNotifier with ChangeNotifier{
 enum Screen{
   COMMIT_SCREEN,
   TESTING_SCREEN,
-  WELCOME_SCREEN
+  WELCOME_SCREEN,
+  STAGE_TESTING_SCREEN,
 }

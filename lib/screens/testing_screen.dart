@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:audioplayers/audio_cache.dart';
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:memory_game/notifiers/pages_notifier.dart';
 import 'package:memory_game/notifiers/users_data_notifier.dart';
@@ -18,7 +17,7 @@ class TestingScreen extends StatefulWidget {
 }
 
 class _TestingScreenState extends State<TestingScreen> {
-  UsersDataNotifier usersDataNotifier;
+  UsersDataNotifier userData;
   ScreenNotifier screenNotifier;
   AudioCache audioCache = AudioCache();
   int currentTestingWord = -1;
@@ -27,8 +26,8 @@ class _TestingScreenState extends State<TestingScreen> {
 
   int getWordNumToTest(UsersDataNotifier userData) {
     for (int i = 0; i < userData.wordList.length; i++) {
-      print(
-          '${userData.wordList[i].isMemorized} ${userData.wordList[i].mempool} data');
+      print('${userData.wordList[i].isMemorized} ${userData.wordList[i].mempool} data');
+
       if (userData.wordList[i].isMemorized == false &&
           userData.wordList[i].mempool == 1) {
         return i;
@@ -72,10 +71,10 @@ class _TestingScreenState extends State<TestingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    usersDataNotifier = Provider.of<UsersDataNotifier>(context);
+    userData = Provider.of<UsersDataNotifier>(context);
     screenNotifier = Provider.of<ScreenNotifier>(context);
     if (currentTestingWord == -1) {
-      currentTestingWord = getWordNumToTest(usersDataNotifier);
+      currentTestingWord = getWordNumToTest(userData);
     }
 
     DateTime lastCommitDate =
@@ -85,7 +84,7 @@ class _TestingScreenState extends State<TestingScreen> {
     if (lastCommitDate.difference(DateTime.now()).inDays == 0) {
       return Scaffold(
         appBar: AppBar(
-          title: Text('Testing'),
+          title: Text('Stage Testing'),
         ),
         body: Container(
           color: Colors.white,
@@ -102,7 +101,7 @@ class _TestingScreenState extends State<TestingScreen> {
             FlatButton(
               onPressed: () {
                 audioCache.play(
-                    'audio/${usersDataNotifier.wordList[currentTestingWord].audioFileName}');
+                    'audio/${userData.wordList[currentTestingWord].audioFileName}');
               },
               child: Icon(
                 Icons.hearing,
@@ -124,13 +123,8 @@ class _TestingScreenState extends State<TestingScreen> {
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 20.0),
                   child: Center(
-                    child: AutoSizeText(
-                      '${usersDataNotifier.wordList[currentTestingWord].mainText}',
-                      minFontSize: 10,
-                      maxFontSize: 100,
-                      maxLines: 1,
-                      style: TextStyle(fontSize: 100),
-                    ),
+                    child: Image.asset(
+                        'assets/images/main_text_images/${userData.wordList[currentTestingWord].mainText}'),
                   ),
                 ),
               ),
@@ -168,7 +162,7 @@ class _TestingScreenState extends State<TestingScreen> {
                       answerFormState.currentState.reset();
 
                       if (currentAnswer.trim().toLowerCase() ==
-                          usersDataNotifier
+                          userData
                               .wordList[currentTestingWord].firstValue
                               .toString()
                               .trim()
@@ -180,15 +174,13 @@ class _TestingScreenState extends State<TestingScreen> {
                           ),
                         );
 
-                        usersDataNotifier
+                        userData
                             .wordList[currentTestingWord].isMemorized = true;
-                        usersDataNotifier.successRememberedWordsNum++;
-                        usersDataNotifier.wordList[currentTestingWord].mempool =
-                            0;
+                        userData.successRememberedWordsNum++;
+                        userData.wordList[currentTestingWord].mempool = 0;
                       } else {
-                        usersDataNotifier.wordsCommitted--;
-                        usersDataNotifier.wordList[currentTestingWord].mempool =
-                            0;
+                        userData.wordsCommitted--;
+                        userData.wordList[currentTestingWord].mempool = 0;
                         Scaffold.of(context).showSnackBar(
                           SnackBar(
                             backgroundColor: Colors.red,
@@ -200,24 +192,22 @@ class _TestingScreenState extends State<TestingScreen> {
 
                       final prefs = await SharedPreferences.getInstance();
 
-                      prefs.setInt(
-                          'wordsCommitted', usersDataNotifier.wordsCommitted);
-                      prefs.setInt('successRememberedWordsNum',
-                          usersDataNotifier.successRememberedWordsNum);
+                      prefs.setInt('wordsCommitted', userData.wordsCommitted);
+                      prefs.setInt('successRememberedWordsNum', userData.successRememberedWordsNum);
 
                       List<String> data = List();
-                      usersDataNotifier.wordList.forEach((element) {
+                      userData.wordList.forEach((element) {
                         data.add(element.toString());
                         print(element.toString());
                       });
                       prefs.setStringList('words', data);
 
-                      currentTestingWord = getWordNumToTest(usersDataNotifier);
+                      currentTestingWord = getWordNumToTest(userData);
                       if (currentTestingWord == -1) {
-                        usersDataNotifier.currentDayToRemember =
-                            usersDataNotifier.toRememberWordsNum;
+                        userData.currentDayToRemember =
+                            userData.toRememberWordsNum;
                         prefs.setInt('currentDayToRemember',
-                            usersDataNotifier.currentDayToRemember);
+                            userData.currentDayToRemember);
                         prefs.remove('lastCommitDate');
                         screenNotifier.currentScreen = Screen.COMMIT_SCREEN;
                       }

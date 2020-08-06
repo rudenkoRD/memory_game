@@ -52,7 +52,8 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/database/databasetest1.csv
-    - assets/images/
+    - assets/images/display_images/
+    - assets/images/welcome_screen_image.jpg
     - assets/images/main_text_images/
     - assets/audio/
 

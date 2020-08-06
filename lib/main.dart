@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:memory_game/notifiers/pages_notifier.dart';
 import 'package:memory_game/notifiers/users_data_notifier.dart';
 import 'package:memory_game/screens/commit_words_screen.dart';
+import 'package:memory_game/screens/stage_test_screen.dart';
 import 'package:memory_game/screens/testing_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -40,45 +41,82 @@ class _MyAppState extends State<MyApp> {
 
     ScreenNotifier screenNotifier =
         Provider.of<ScreenNotifier>(context, listen: false);
+    UsersDataNotifier usersDataNotifier = Provider.of<UsersDataNotifier>(context, listen: false);
+
+    bool isEnterSplashScreen = false;
+    for(int i = 0; i < usersDataNotifier.testingStagesList.length; i++){
+      if(usersDataNotifier.wordsCommitted >= int.parse(usersDataNotifier.testingStagesList[i])) {
+        if(usersDataNotifier.testingStageIsComplete[i] == 'false') {
+          isEnterSplashScreen = true;
+          break;
+        }
+      }
+    }
 
     if (lastCommitDateTime != null) {
-        screenNotifier.currentScreen = Screen.TESTING_SCREEN;
+      screenNotifier.currentScreen = isEnterSplashScreen ? Screen.STAGE_TESTING_SCREEN : Screen.TESTING_SCREEN;
     } else if (numOfLaunches != 0) {
       screenNotifier.currentScreen = Screen.COMMIT_SCREEN;
-    }  else screenNotifier.currentScreen = Screen.WELCOME_SCREEN;
+    } else
+      screenNotifier.currentScreen = Screen.WELCOME_SCREEN;
   }
 
   _getUserData(context) async {
-    String database = await rootBundle.loadString('assets/database/databasetest1.csv');
+    String database =
+        await rootBundle.loadString('assets/database/databasetest1.csv');
     List<String> tableData = database.split('\n');
+
+    List<String> testingStagesData = tableData[0].split(',');
+
+    List<String> wordsData = tableData.sublist(1);
 
     final prefs = await SharedPreferences.getInstance();
 
-    if(prefs.getStringList('words') == null){
-      prefs.setStringList('words', tableData);
+    if (prefs.getStringList('words') == null) {
+      prefs.setStringList('words', wordsData);
     }
 
-    List<List<String>> data= List();
+    List<List<String>> data = List();
     prefs.getStringList('words').forEach((element) {
       List<String> split = element.split(',');
       data.add(split);
     });
 
-    UsersDataNotifier usersDataNotifier = Provider.of<UsersDataNotifier>(context, listen: false);
+    UsersDataNotifier usersDataNotifier =
+        Provider.of<UsersDataNotifier>(context, listen: false);
 
     usersDataNotifier.totalNumOfWords = data.length;
 
-    final int successRememberedWordsNum = prefs.getInt('successRememberedWordsNum');
-    usersDataNotifier.successRememberedWordsNum = successRememberedWordsNum == null ? 0 : successRememberedWordsNum;
+
+    usersDataNotifier.testingStagesList = testingStagesData;
+
+    if(prefs.getStringList('testingStageIsComplete') == null) {
+      usersDataNotifier.testingStageIsComplete = List.generate(
+          testingStagesData.length, (index) => 'false');
+
+      prefs.setStringList('testingStageIsComplete', usersDataNotifier.testingStageIsComplete);
+    }else {
+      usersDataNotifier.testingStageIsComplete = prefs.getStringList('testingStageIsComplete');
+    }
+
+    usersDataNotifier.numberToStageTest = -1;
+
+    final int successRememberedWordsNum =
+        prefs.getInt('successRememberedWordsNum');
+    usersDataNotifier.successRememberedWordsNum =
+        successRememberedWordsNum == null ? 0 : successRememberedWordsNum;
 
     final wordsCommitted = prefs.getInt('wordsCommitted');
-    usersDataNotifier.wordsCommitted = wordsCommitted == null ? 0:wordsCommitted;
+    usersDataNotifier.wordsCommitted =
+        wordsCommitted == null ? 0 : wordsCommitted;
 
     final currentDayToRemember = prefs.getInt('currentDayToRemember');
-    usersDataNotifier.currentDayToRemember = currentDayToRemember == null ? 3 : currentDayToRemember;
+    usersDataNotifier.currentDayToRemember =
+        currentDayToRemember == null ? 3 : currentDayToRemember;
 
     final toRememberWordsNum = prefs.getInt('toRememberWordsNum');
-    usersDataNotifier.toRememberWordsNum = toRememberWordsNum == null ? 3 : toRememberWordsNum;
+    usersDataNotifier.toRememberWordsNum =
+        toRememberWordsNum == null ? 3 : toRememberWordsNum;
 
     usersDataNotifier.setWordList(data);
 
@@ -92,8 +130,9 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    _getLastCommitDate(context);
     _getUserData(context);
+    _getLastCommitDate(context);
+
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -114,6 +153,8 @@ class _MyAppState extends State<MyApp> {
               return CommitWordsScreen();
             case Screen.TESTING_SCREEN:
               return TestingScreen(lastCommitDateTime: lastCommitDateTime,);
+            case Screen.STAGE_TESTING_SCREEN:
+              return StageTestScreen(lastCommitDateTime: lastCommitDateTime,);
             default:
               return LoadingScreen();
           }

@@ -10,6 +10,10 @@ class UsersDataNotifier with ChangeNotifier {
   int _currentDayToRemember;
   List<Word> _wordList;
 
+  int _numberToStageTest;
+  List<String> _testingStagesList;
+  List<String> _testingStageIsComplete;
+
   get toRememberWordsNum => _toRememberWordsNum;
 
   get successRememberedWordsNum => _successRememberedWordsNum;
@@ -22,11 +26,23 @@ class UsersDataNotifier with ChangeNotifier {
 
   List<Word> get wordList => _wordList;
 
+  List<String> get testingStagesList => _testingStagesList;
+
+  List<String> get testingStageIsComplete => _testingStageIsComplete;
+
+  get numberToStageTest => _numberToStageTest;
+
 
   set toRememberWordsNum(newValue) {
     _toRememberWordsNum = newValue;
     notifyListeners();
   }
+
+  set testingStageIsComplete(newValue) {
+    _testingStageIsComplete = newValue;
+    notifyListeners();
+  }
+
 
   set successRememberedWordsNum(newValue) {
     _successRememberedWordsNum = newValue;
@@ -45,6 +61,16 @@ class UsersDataNotifier with ChangeNotifier {
 
   set currentDayToRemember(newValue) {
     _currentDayToRemember = newValue;
+    notifyListeners();
+  }
+
+  set numberToStageTest(newValue){
+    _numberToStageTest = newValue;
+    notifyListeners();
+  }
+
+  set testingStagesList(newValue){
+    _testingStagesList = newValue;
     notifyListeners();
   }
 
