@@ -45,11 +45,17 @@ class _MyAppState extends State<MyApp> {
 
     bool isEnterSplashScreen = false;
     for(int i = 0; i < usersDataNotifier.testingStagesList.length; i++){
-      if(usersDataNotifier.wordsCommitted >= int.parse(usersDataNotifier.testingStagesList[i])) {
+      if(usersDataNotifier.wordsCommitted >= int.parse(usersDataNotifier.testingStagesList[i]) ) {
         if(usersDataNotifier.testingStageIsComplete[i] == 'false') {
+          usersDataNotifier.testingStageIsComplete[i] = 'active';
+          prefs.setStringList('testingStageIsComplete', usersDataNotifier.testingStageIsComplete);
           isEnterSplashScreen = true;
           break;
         }
+      }
+      if(usersDataNotifier.testingStageIsComplete[i] == 'active'){
+        isEnterSplashScreen = true;
+        break;
       }
     }
 

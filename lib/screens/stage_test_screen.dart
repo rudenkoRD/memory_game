@@ -27,6 +27,7 @@ class _StageTestScreenState extends State<StageTestScreen> {
   int middleFlex = 6;
   String currentAnswer;
   int currentWord = -1;
+  double totalHeight;
   int totalNumberOfTestedWords;
   GlobalKey<FormState> stateTestingAnswer = GlobalKey<FormState>();
   AudioCache audioCache = AudioCache();
@@ -89,11 +90,13 @@ class _StageTestScreenState extends State<StageTestScreen> {
 
   @override
   Widget build(BuildContext context) {
-    focusNode.addListener(() {
-      if(focusNode.hasFocus){
-        scrollController.jumpTo(MediaQuery.of(context).size.height - 2*kToolbarHeight);
-      }
-    });
+    totalHeight = MediaQuery.of(context).size.height - (AppBar().preferredSize.height + MediaQuery.of(context).padding.top);
+
+//    focusNode.addListener(() {
+//      if(focusNode.hasFocus){
+//        scrollController.jumpTo(totalHeight);
+//      }
+//    });
 
 
     userData = Provider.of<UsersDataNotifier>(context);
@@ -116,6 +119,10 @@ class _StageTestScreenState extends State<StageTestScreen> {
         ),
       );
     }
+
+    print('${MediaQuery.of(context).padding.top} padding');
+    print('${AppBar().preferredSize.height} appbar');
+    print('$kToolbarHeight tool');
 
     return Scaffold(
       appBar: AppBar(
@@ -154,64 +161,73 @@ class _StageTestScreenState extends State<StageTestScreen> {
           ],
         ),
       ),
-      body: Builder(
-        builder: (context) => SingleChildScrollView(
-          controller: scrollController,
-          child: Container(
-            height: MediaQuery.of(context).size.height - 2*kToolbarHeight,
-            width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.all(4),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                topFlex == 2 ? Expanded(
-                      flex: topFlex,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          OutlineBorderCounter(
-                            label: 'Words committed\nto memory',
-                            numberToShow: userData.wordsCommitted,
-                          ),
-                          OutlineBorderCounter(
-                            label: 'Words to test left',
-                            numberToShow: totalNumberOfTestedWords,
-                          ),
-                        ],
-                      ),
-                    ) : Container(),
-                Expanded(
-                  flex: middleFlex,
+      body: Container(
+        height: totalHeight,
+        width: MediaQuery.of(context).size.width,
+        padding: EdgeInsets.all(4),
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              flex: 8,
+              child: SingleChildScrollView(
+                  controller: scrollController,
                   child: Container(
-                    padding: EdgeInsets.only(top: 10),
+                    height: (8 * totalHeight) / 9,
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20.0),
-                          child: Center(
-                            child: Image.asset(
-                                'assets/images/main_text_images/${userData.wordList[currentWord].mainText}'),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                          child: Form(
-                            key: stateTestingAnswer,
-                            child: TextFormField(
-                              focusNode: focusNode,
-                              decoration: InputDecoration(
-                                  labelText: 'enter your answer',
-                                  border: OutlineInputBorder()),
-                              validator: (value) {
-                                if (value.isEmpty) return 'please, enter the answer';
-                                return null;
-                              },
-                              onSaved: (answer) {
-                                currentAnswer = answer;
-                              },
+                        topFlex == 2 ? Expanded(
+                              flex: topFlex,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  OutlineBorderCounter(
+                                    label: 'Words committed\nto memory',
+                                    numberToShow: userData.wordsCommitted,
+                                  ),
+                                  OutlineBorderCounter(
+                                    label: 'Words to test left',
+                                    numberToShow: totalNumberOfTestedWords,
+                                  ),
+                                ],
+                              ),
+                            ) : Container(),
+                        Expanded(
+                          flex: middleFlex,
+                          child: Container(
+                            padding: EdgeInsets.only(top: 10),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 20.0),
+                                  child: Center(
+                                    child: Image.asset(
+                                        'assets/images/main_text_images/${userData.wordList[currentWord].mainText}'),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                                  child: Form(
+                                    key: stateTestingAnswer,
+                                    child: TextFormField(
+                                      focusNode: focusNode,
+                                      decoration: InputDecoration(
+                                          labelText: 'enter your answer',
+                                          border: OutlineInputBorder()),
+                                      validator: (value) {
+                                        if (value.isEmpty) return 'please, enter the answer';
+                                        return null;
+                                      },
+                                      onSaved: (answer) {
+                                        currentAnswer = answer;
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -219,51 +235,78 @@ class _StageTestScreenState extends State<StageTestScreen> {
                     ),
                   ),
                 ),
-                Container(
-                  child: FlatButton(
-                    onPressed: () async {
+            ),
+            Builder(
+              builder: (context) => Container(
+                padding: EdgeInsets.symmetric(vertical: 10),
+                child: FlatButton(
+                  onPressed: () async {
 
-                      if(stateTestingAnswer.currentState.validate()){
-                        stateTestingAnswer.currentState.save();
-                        stateTestingAnswer.currentState.reset();
+                    if(stateTestingAnswer.currentState.validate()){
+                      stateTestingAnswer.currentState.save();
+                      stateTestingAnswer.currentState.reset();
 
-                        if(currentAnswer.trim().toLowerCase() == userData.wordList[currentWord].firstValue.toString().trim().toLowerCase()){
+                      if(currentAnswer.trim().toLowerCase() == userData.wordList[currentWord].firstValue.toString().trim().toLowerCase()){
 
-                          Scaffold.of(context).showSnackBar(
-                            SnackBar(
-                              backgroundColor: Colors.green,
-                              content: Text('Well done', style: TextStyle(fontSize: 25,), textAlign: TextAlign.center,),
-                            ),
-                          );
+                        Scaffold.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: Colors.green,
+                            content: Text('Well done', style: TextStyle(fontSize: 25,), textAlign: TextAlign.center,),
+                          ),
+                        );
 
-                          if(userData.wordList[currentWord].isMemorized == false)
-                            userData.successRememberedWordsNum++;
+                        if(userData.wordList[currentWord].isMemorized == false)
+                          userData.successRememberedWordsNum++;
 
-                          userData.wordList[currentWord].isMemorized = true;
-                          userData.wordList[currentWord].giw = '1';
-                          userData.wordList[currentWord].mempool = 0;
+                        userData.wordList[currentWord].isMemorized = true;
+                        userData.wordList[currentWord].giw = '1';
+                        userData.wordList[currentWord].mempool = 0;
 
-                        }else {
-                          Scaffold.of(context).showSnackBar(
-                            SnackBar(
-                              backgroundColor: Colors.red,
-                              content: Text('Oops that\'s not right',
-                                style: TextStyle(fontSize: 25),textAlign: TextAlign.center,),
-                            ),
-                          );
+                      }else {
+                        Scaffold.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: Colors.red,
+                            content: Text('Oops that\'s not right',
+                              style: TextStyle(fontSize: 25),textAlign: TextAlign.center,),
+                          ),
+                        );
 
-                          if(userData.wordList[currentWord].isMemorized)
-                            userData.wordList[currentWord].giw = 'w';
-                          else userData.wordList[currentWord].giw = '1';
+                        if(userData.wordList[currentWord].isMemorized)
+                          userData.wordList[currentWord].giw = 'w';
+                        else userData.wordList[currentWord].giw = '1';
 
-                          userData.wordList[currentWord].mempool = 0;
-                          userData.wordsCommitted--;
+                        userData.wordList[currentWord].mempool = 0;
+                        userData.wordsCommitted--;
+                      }
+
+                      final prefs = await SharedPreferences.getInstance();
+
+                      prefs.setInt('wordsCommitted', userData.wordsCommitted);
+
+
+                      List<String> data = List();
+                      userData.wordList.forEach((element) {
+                        data.add(element.toString());
+                        print(element.toString());
+                      });
+                      prefs.setStringList('words', data);
+
+
+                      currentWord = getNextWordToTest();
+                      if(currentWord == -1){
+
+                        for(int i = 0; i < userData.wordList.length; i++){
+                          if(userData.wordList[i].giw == '1')
+                            userData.wordList[i].giw = '0';
                         }
 
-                        final prefs = await SharedPreferences.getInstance();
+                        for(int i = 0; i < userData.testingStageIsComplete.length; i++){
+                          if(userData.testingStageIsComplete[i] == 'active'){
+                            userData.testingStageIsComplete[i] = 'true';
+                          }
+                        }
 
-                        prefs.setInt('wordsCommitted', userData.wordsCommitted);
-
+                        prefs.setStringList('testingStageIsComplete', userData.testingStageIsComplete);
 
                         List<String> data = List();
                         userData.wordList.forEach((element) {
@@ -272,55 +315,30 @@ class _StageTestScreenState extends State<StageTestScreen> {
                         });
                         prefs.setStringList('words', data);
 
-
-                        currentWord = getNextWordToTest();
-                        if(currentWord == -1){
-
-                          for(int i = 0; i < userData.wordList.length; i++){
-                            if(userData.wordList[i].giw == '1')
-                              userData.wordList[i].giw = '0';
-                          }
-
-                          for(int i = 0; i < userData.testingStageIsComplete.length; i++){
-                            if(userData.testingStageIsComplete[i] == 'false'){
-                              userData.testingStageIsComplete[i] = 'true';
-                            }
-                          }
-
-                          prefs.setStringList('testingStageIsComplete', userData.testingStageIsComplete);
-
-                          List<String> data = List();
-                          userData.wordList.forEach((element) {
-                            data.add(element.toString());
-                            print(element.toString());
-                          });
-                          prefs.setStringList('words', data);
-
-                          userData.currentDayToRemember =
-                              userData.toRememberWordsNum;
-                          prefs.setInt('currentDayToRemember',
-                              userData.currentDayToRemember);
-                          prefs.remove('lastCommitDate');
-                          screenNotifier.currentScreen = Screen.COMMIT_SCREEN;
-                        }
-
-                        setState(() {});
+                        userData.currentDayToRemember =
+                            userData.toRememberWordsNum;
+                        prefs.setInt('currentDayToRemember',
+                            userData.currentDayToRemember);
+                        prefs.remove('lastCommitDate');
+                        screenNotifier.currentScreen = Screen.COMMIT_SCREEN;
                       }
 
-                    },
-                    padding: EdgeInsets.symmetric(horizontal: 50),
-                    color: Colors.deepPurple,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Text(
-                      'Test me',
-                      style: TextStyle(color: Colors.white, fontSize: 25),
-                    ),
+                      setState(() {});
+                    }
+
+                  },
+                  padding: EdgeInsets.symmetric(horizontal: 50),
+                  color: Colors.deepPurple,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Text(
+                    'Test me',
+                    style: TextStyle(color: Colors.white, fontSize: 25),
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
