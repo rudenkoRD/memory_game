@@ -121,15 +121,17 @@ class _TestingScreenState extends State<TestingScreen> {
               Expanded(
                 flex: 4,
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20.0),
                   child: Center(
-                    child: Image.asset(
-                        'assets/images/main_text_images/${userData.wordList[currentTestingWord].mainText}'),
+                    child: SingleChildScrollView(
+                      child: Image.asset(
+                          'assets/images/main_text_images/${userData.wordList[currentTestingWord].mainText}'),
+                    ),
                   ),
                 ),
               ),
+              SizedBox(height: 15),
               Expanded(
-                flex: 3,
+                flex: 2,
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 10.0),
                   child: Form(
@@ -150,9 +152,9 @@ class _TestingScreenState extends State<TestingScreen> {
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(bottom: 20),
+                margin: EdgeInsets.only(bottom: 5),
                 child: FlatButton(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding: EdgeInsets.symmetric(horizontal: 50),
                   color: Colors.deepPurple,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
@@ -216,8 +218,8 @@ class _TestingScreenState extends State<TestingScreen> {
                     }
                   },
                   child: Text(
-                    'test me',
-                    style: TextStyle(color: Colors.white, fontSize: 30),
+                    'Test me',
+                    style: TextStyle(color: Colors.white, fontSize: 25),
                   ),
                 ),
               ),
