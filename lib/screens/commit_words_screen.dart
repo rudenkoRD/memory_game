@@ -445,6 +445,15 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
         children: <Widget>[
           SimpleDialogOption(
             onPressed: () {
+              Navigator.of(context).pop(5);
+            },
+            child: Text(
+              '5 words',
+              textAlign: TextAlign.center,
+            ),
+          ),
+          SimpleDialogOption(
+            onPressed: () {
               Navigator.of(context).pop(4);
             },
             child: Text(
@@ -458,15 +467,6 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
             },
             child: Text(
               '3 words',
-              textAlign: TextAlign.center,
-            ),
-          ),
-          SimpleDialogOption(
-            onPressed: () {
-              Navigator.of(context).pop(2);
-            },
-            child: Text(
-              '2 words',
               textAlign: TextAlign.center,
             ),
           ),

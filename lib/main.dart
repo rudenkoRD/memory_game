@@ -118,11 +118,11 @@ class _MyAppState extends State<MyApp> {
 
     final currentDayToRemember = prefs.getInt('currentDayToRemember');
     usersDataNotifier.currentDayToRemember =
-        currentDayToRemember == null ? 3 : currentDayToRemember;
+        currentDayToRemember == null ? 4 : currentDayToRemember;
 
     final toRememberWordsNum = prefs.getInt('toRememberWordsNum');
     usersDataNotifier.toRememberWordsNum =
-        toRememberWordsNum == null ? 3 : toRememberWordsNum;
+        toRememberWordsNum == null ? 4 : toRememberWordsNum;
 
     usersDataNotifier.setWordList(data);
 

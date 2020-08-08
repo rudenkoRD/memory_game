@@ -23,7 +23,9 @@ class _StageTestScreenState extends State<StageTestScreen> {
 
   UsersDataNotifier userData;
   ScreenNotifier screenNotifier;
-  int topFlex = 2;
+  int topFlex = 1;
+  bool showCounters = true;
+  bool keyboardIsActive = false;
   int middleFlex = 6;
   String currentAnswer;
   int currentWord = -1;
@@ -92,11 +94,9 @@ class _StageTestScreenState extends State<StageTestScreen> {
   Widget build(BuildContext context) {
     totalHeight = MediaQuery.of(context).size.height - (AppBar().preferredSize.height + MediaQuery.of(context).padding.top);
 
-//    focusNode.addListener(() {
-//      if(focusNode.hasFocus){
-//        scrollController.jumpTo(totalHeight);
-//      }
-//    });
+    focusNode.addListener(() {
+      keyboardIsActive = focusNode.hasFocus;
+    });
 
 
     userData = Provider.of<UsersDataNotifier>(context);
@@ -146,9 +146,7 @@ class _StageTestScreenState extends State<StageTestScreen> {
                 InkWell(
                   onTap: () {
                     print('tap');
-                    if(topFlex == 2){
-                      topFlex = 0;
-                    }else topFlex = 2;
+                    showCounters = !showCounters;
 
                     setState(() {});
                   },
@@ -162,79 +160,68 @@ class _StageTestScreenState extends State<StageTestScreen> {
         ),
       ),
       body: Container(
-        height: totalHeight,
+        height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         padding: EdgeInsets.all(4),
         child: Column(
+          mainAxisSize: MainAxisSize.max,
           children: <Widget>[
+            showCounters && !keyboardIsActive ? Expanded(
+              flex: 2,
+              child: Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    OutlineBorderCounter(
+                      label: 'Words committed\nto memory',
+                      numberToShow: userData.wordsCommitted,
+                    ),
+                    OutlineBorderCounter(
+                      label: 'Words to test left',
+                      numberToShow: totalNumberOfTestedWords,
+                    ),
+                  ],
+                ),
+              ),
+            ) : Container(),
             Expanded(
-              flex: 8,
-              child: SingleChildScrollView(
-                  controller: scrollController,
-                  child: Container(
-                    height: (8 * totalHeight) / 9,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        topFlex == 2 ? Expanded(
-                              flex: topFlex,
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  OutlineBorderCounter(
-                                    label: 'Words committed\nto memory',
-                                    numberToShow: userData.wordsCommitted,
-                                  ),
-                                  OutlineBorderCounter(
-                                    label: 'Words to test left',
-                                    numberToShow: totalNumberOfTestedWords,
-                                  ),
-                                ],
-                              ),
-                            ) : Container(),
-                        Expanded(
-                          flex: middleFlex,
-                          child: Container(
-                            padding: EdgeInsets.only(top: 10),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: <Widget>[
-                                Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 20.0),
-                                  child: Center(
-                                    child: Image.asset(
-                                        'assets/images/main_text_images/${userData.wordList[currentWord].mainText}'),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                                  child: Form(
-                                    key: stateTestingAnswer,
-                                    child: TextFormField(
-                                      focusNode: focusNode,
-                                      decoration: InputDecoration(
-                                          labelText: 'enter your answer',
-                                          border: OutlineInputBorder()),
-                                      validator: (value) {
-                                        if (value.isEmpty) return 'please, enter the answer';
-                                        return null;
-                                      },
-                                      onSaved: (answer) {
-                                        currentAnswer = answer;
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
+              flex : 4,
+              child: Container(
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Center(
+                    child: SingleChildScrollView(
+                      child: Image.asset(
+                          'assets/images/main_text_images/${userData.wordList[currentWord].mainText}'),
                     ),
                   ),
                 ),
+              ),
+            ),
+            SizedBox(height: 15),
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: Form(
+                  key: stateTestingAnswer,
+                  child: TextFormField(
+                    focusNode: focusNode,
+                    decoration: InputDecoration(
+                        labelText: 'enter your answer',
+                        border: OutlineInputBorder()),
+                    validator: (value) {
+                      if (value.isEmpty) return 'please, enter the answer';
+                      return null;
+                    },
+                    onSaved: (answer) {
+                      currentAnswer = answer;
+                    },
+                  ),
+                ),
+              ),
             ),
             Builder(
               builder: (context) => Container(
