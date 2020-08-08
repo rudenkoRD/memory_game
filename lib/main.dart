@@ -43,24 +43,24 @@ class _MyAppState extends State<MyApp> {
         Provider.of<ScreenNotifier>(context, listen: false);
     UsersDataNotifier usersDataNotifier = Provider.of<UsersDataNotifier>(context, listen: false);
 
-    bool isEnterSplashScreen = false;
+    bool isEnterStageTestScreen = false;
     for(int i = 0; i < usersDataNotifier.testingStagesList.length; i++){
       if(usersDataNotifier.wordsCommitted >= int.parse(usersDataNotifier.testingStagesList[i]) ) {
         if(usersDataNotifier.testingStageIsComplete[i] == 'false') {
           usersDataNotifier.testingStageIsComplete[i] = 'active';
           prefs.setStringList('testingStageIsComplete', usersDataNotifier.testingStageIsComplete);
-          isEnterSplashScreen = true;
+          isEnterStageTestScreen = true;
           break;
         }
       }
       if(usersDataNotifier.testingStageIsComplete[i] == 'active'){
-        isEnterSplashScreen = true;
+        isEnterStageTestScreen = true;
         break;
       }
     }
 
     if (lastCommitDateTime != null) {
-      screenNotifier.currentScreen = isEnterSplashScreen ? Screen.STAGE_TESTING_SCREEN : Screen.TESTING_SCREEN;
+      screenNotifier.currentScreen = isEnterStageTestScreen ? Screen.STAGE_TESTING_SCREEN : Screen.TESTING_SCREEN;
     } else if (numOfLaunches != 0) {
       screenNotifier.currentScreen = Screen.COMMIT_SCREEN;
     } else

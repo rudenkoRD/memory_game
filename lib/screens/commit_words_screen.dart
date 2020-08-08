@@ -23,6 +23,18 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
 
   int rememberedWords;
   AudioCache audioCache = AudioCache();
+  var prefs;
+
+  @override
+  void initState(){
+    super.initState();
+
+    loadPrefs();
+  }
+
+  loadPrefs() async {
+    prefs = await SharedPreferences.getInstance();
+  }
 
   int getWordNumToRemember(UsersDataNotifier userData) {
     for (int i = 0; i < userData.wordList.length; i++) {
@@ -53,6 +65,42 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
 
     if (userData.currentDayToRemember <= 0 ||
         (currentWord == -1 && rememberedWords > 0)) {
+
+      bool isEnterStageTestScreen = false;
+      for(int i = 0; i < userData.testingStagesList.length; i++){
+        if(userData.wordsCommitted >= int.parse(userData.testingStagesList[i]) ) {
+          if(userData.testingStageIsComplete[i] == 'false') {
+            userData.testingStageIsComplete[i] = 'active';
+            prefs.setStringList('testingStageIsComplete', userData.testingStageIsComplete);
+            isEnterStageTestScreen = true;
+            break;
+          }
+        }
+        if(userData.testingStageIsComplete[i] == 'active'){
+          isEnterStageTestScreen = true;
+          break;
+        }
+      }
+
+      if(isEnterStageTestScreen) {
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          await showDialog(context: context,
+              builder: (context) => AlertDialog(
+                content: Text('You making great progress, tomorrow we will do a State test to check your progress to date'),
+                actions: <Widget>[
+                  FlatButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('ok'),
+                    color: Colors.green,
+                  )
+                ],
+              ));
+        });
+      }
+
+
       return Scaffold(
         appBar: AppBar(
           title: Text('Commit words'),
@@ -87,6 +135,7 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
     }
 
     if (currentWord == -1 && rememberedWords == 0) {
+
       return Scaffold(
         appBar: AppBar(
           title: Text('Commit words'),
