@@ -228,6 +228,7 @@ class _StageTestScreenState extends State<StageTestScreen> {
                 padding: EdgeInsets.symmetric(vertical: 10),
                 child: FlatButton(
                   onPressed: () async {
+                    final prefs = await SharedPreferences.getInstance();
 
                     if(stateTestingAnswer.currentState.validate()){
                       stateTestingAnswer.currentState.save();
@@ -237,10 +238,45 @@ class _StageTestScreenState extends State<StageTestScreen> {
 
                         Scaffold.of(context).showSnackBar(
                           SnackBar(
+                            duration: Duration(milliseconds: 900),
                             backgroundColor: Colors.green,
                             content: Text('Well done', style: TextStyle(fontSize: 25,), textAlign: TextAlign.center,),
                           ),
-                        );
+                        ).closed
+                        .then((value) {
+                          currentWord = getNextWordToTest();
+                          if(currentWord == -1){
+
+                            for(int i = 0; i < userData.wordList.length; i++){
+                              if(userData.wordList[i].giw == '1')
+                                userData.wordList[i].giw = '0';
+                            }
+
+                            for(int i = 0; i < userData.testingStageIsComplete.length; i++){
+                              if(userData.testingStageIsComplete[i] == 'active'){
+                                userData.testingStageIsComplete[i] = 'true';
+                              }
+                            }
+
+                            prefs.setStringList('testingStageIsComplete', userData.testingStageIsComplete);
+
+                            List<String> data = List();
+                            userData.wordList.forEach((element) {
+                              data.add(element.toString());
+                              print(element.toString());
+                            });
+                            prefs.setStringList('words', data);
+
+                            userData.currentDayToRemember =
+                                userData.toRememberWordsNum;
+                            prefs.setInt('currentDayToRemember',
+                                userData.currentDayToRemember);
+                            prefs.remove('lastCommitDate');
+                            screenNotifier.currentScreen = Screen.COMMIT_SCREEN;
+                          }
+
+                          setState(() {});
+                        });
 
                         if(userData.wordList[currentWord].isMemorized == false)
                           userData.successRememberedWordsNum++;
@@ -252,11 +288,45 @@ class _StageTestScreenState extends State<StageTestScreen> {
                       }else {
                         Scaffold.of(context).showSnackBar(
                           SnackBar(
+                            duration: Duration(milliseconds: 900),
                             backgroundColor: Colors.red,
                             content: Text('Oops that\'s not right',
                               style: TextStyle(fontSize: 25),textAlign: TextAlign.center,),
                           ),
-                        );
+                        ).closed.then((value) {
+                          currentWord = getNextWordToTest();
+                          if(currentWord == -1){
+
+                            for(int i = 0; i < userData.wordList.length; i++){
+                              if(userData.wordList[i].giw == '1')
+                                userData.wordList[i].giw = '0';
+                            }
+
+                            for(int i = 0; i < userData.testingStageIsComplete.length; i++){
+                              if(userData.testingStageIsComplete[i] == 'active'){
+                                userData.testingStageIsComplete[i] = 'true';
+                              }
+                            }
+
+                            prefs.setStringList('testingStageIsComplete', userData.testingStageIsComplete);
+
+                            List<String> data = List();
+                            userData.wordList.forEach((element) {
+                              data.add(element.toString());
+                              print(element.toString());
+                            });
+                            prefs.setStringList('words', data);
+
+                            userData.currentDayToRemember =
+                                userData.toRememberWordsNum;
+                            prefs.setInt('currentDayToRemember',
+                                userData.currentDayToRemember);
+                            prefs.remove('lastCommitDate');
+                            screenNotifier.currentScreen = Screen.COMMIT_SCREEN;
+                          }
+
+                          setState(() {});
+                        });
 
                         if(userData.wordList[currentWord].isMemorized)
                           userData.wordList[currentWord].giw = 'w';
@@ -266,7 +336,6 @@ class _StageTestScreenState extends State<StageTestScreen> {
                         userData.wordsCommitted--;
                       }
 
-                      final prefs = await SharedPreferences.getInstance();
 
                       prefs.setInt('wordsCommitted', userData.wordsCommitted);
 
@@ -278,39 +347,6 @@ class _StageTestScreenState extends State<StageTestScreen> {
                       });
                       prefs.setStringList('words', data);
 
-
-                      currentWord = getNextWordToTest();
-                      if(currentWord == -1){
-
-                        for(int i = 0; i < userData.wordList.length; i++){
-                          if(userData.wordList[i].giw == '1')
-                            userData.wordList[i].giw = '0';
-                        }
-
-                        for(int i = 0; i < userData.testingStageIsComplete.length; i++){
-                          if(userData.testingStageIsComplete[i] == 'active'){
-                            userData.testingStageIsComplete[i] = 'true';
-                          }
-                        }
-
-                        prefs.setStringList('testingStageIsComplete', userData.testingStageIsComplete);
-
-                        List<String> data = List();
-                        userData.wordList.forEach((element) {
-                          data.add(element.toString());
-                          print(element.toString());
-                        });
-                        prefs.setStringList('words', data);
-
-                        userData.currentDayToRemember =
-                            userData.toRememberWordsNum;
-                        prefs.setInt('currentDayToRemember',
-                            userData.currentDayToRemember);
-                        prefs.remove('lastCommitDate');
-                        screenNotifier.currentScreen = Screen.COMMIT_SCREEN;
-                      }
-
-                      setState(() {});
                     }
 
                   },
