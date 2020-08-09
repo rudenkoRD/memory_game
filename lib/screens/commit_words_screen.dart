@@ -239,7 +239,13 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
           ),
         );
       });
+    }else if(currentWord != -1) {
+      WidgetsBinding.instance.addPostFrameCallback((_)  {
+        audioCache.play(
+            'audio/${userData.wordList[currentWord].audioFileName}');
+      });
     }
+
 
     return Scaffold(
       appBar: AppBar(
