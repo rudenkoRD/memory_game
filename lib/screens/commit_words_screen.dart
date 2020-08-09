@@ -369,9 +369,10 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
                   onPressed: () async {
-                    final prefs = await SharedPreferences.getInstance();
-
                     userData.wordsCommitted++;
+
+                    prefs.setInt(
+                        'wordsCommitted', userData.wordsCommitted);
 
                     if(currentWordToRefreshInMemory != -1) {
                      userData.wordList[currentWordToRefreshInMemory].giw = '0';
