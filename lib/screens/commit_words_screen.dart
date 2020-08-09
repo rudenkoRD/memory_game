@@ -282,15 +282,16 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
                           .then((value) async {
                         if (value != null) {
                           userData.toRememberWordsNum = value;
-                          if (userData.currentDayToRemember < value) {
+                          if (rememberedWords < value) {
                             userData.currentDayToRemember =
                                 value - rememberedWords;
+
+                            prefs.setInt('currentDayToRemember',
+                                userData.currentDayToRemember);
                           }
-                          final prefs = await SharedPreferences.getInstance();
+
                           prefs.setInt('toRememberWordsNum',
                               userData.toRememberWordsNum);
-                          prefs.setInt('currentDayToRemember',
-                              userData.currentDayToRemember);
                         }
                       });
                     },
