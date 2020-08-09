@@ -278,8 +278,10 @@ class _StageTestScreenState extends State<StageTestScreen> {
                           setState(() {});
                         });
 
-                        if(userData.wordList[currentWord].isMemorized == false)
+
+                        if(!userData.wordList[currentWord].isMemorized) {
                           userData.successRememberedWordsNum++;
+                        }
 
                         userData.wordList[currentWord].isMemorized = true;
                         userData.wordList[currentWord].giw = '1';
@@ -331,6 +333,8 @@ class _StageTestScreenState extends State<StageTestScreen> {
                         if(userData.wordList[currentWord].isMemorized)
                           userData.wordList[currentWord].giw = 'w';
                         else userData.wordList[currentWord].giw = '1';
+
+                        userData.wordList[currentWord].isMemorized = false;
 
                         userData.wordList[currentWord].mempool = 0;
                         userData.wordsCommitted--;

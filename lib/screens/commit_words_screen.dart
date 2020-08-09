@@ -382,22 +382,6 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
 
                     if(currentWordToRefreshInMemory != -1) {
                      userData.wordList[currentWordToRefreshInMemory].giw = '0';
-
-                     List<String> data = List();
-                     userData.wordList.forEach((element) {
-                       data.add(element.toString());
-                       print(element.toString());
-                     });
-                     prefs.setStringList('words', data);
-
-                     currentWordToRefreshInMemory = getCurrentWordToRefreshInMemory();
-                     if(currentWordToRefreshInMemory == -1){
-                       currentWord = getWordNumToRemember(userData);
-                     }else currentWord = currentWordToRefreshInMemory;
-
-                     setState(() {});
-
-                     return;
                     }
 
                     userData.wordList[currentWord].mempool = 1;
@@ -420,7 +404,11 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
                     prefs.setInt('toRememberWordsNum',
                         userData.toRememberWordsNum);
 
-                    currentWord = getWordNumToRemember(userData);
+                    currentWordToRefreshInMemory = getCurrentWordToRefreshInMemory();
+                    if(currentWordToRefreshInMemory == -1){
+                      currentWord = getWordNumToRemember(userData);
+                    }else currentWord = currentWordToRefreshInMemory;
+
 
                     if (userData.currentDayToRemember <= 0 ||
                         (currentWord == -1 && rememberedWords > 0)) {
