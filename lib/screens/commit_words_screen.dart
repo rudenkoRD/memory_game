@@ -246,6 +246,7 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
       });
     }
 
+    var totalHeight = MediaQuery.of(context).size.height - (AppBar().preferredSize.height + MediaQuery.of(context).padding.top);
 
     return Scaffold(
       appBar: AppBar(
@@ -310,124 +311,128 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
           ],
         ),
       ),
-      body: Container(
-        padding: EdgeInsets.all(4),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
+      body: SingleChildScrollView(
+        child: Container(
+          height: totalHeight,
+          padding: EdgeInsets.all(4),
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
 
-            currentWordToRefreshInMemory != -1 ? Expanded(
-              flex: 2,
-              child: Center(child: Text('Refresh old words in memory', textAlign: TextAlign.center, style: TextStyle(fontSize: 30))),
-            ) : topFlex == 2
-                ? Expanded(
-                    flex: topFlex,
-                    child: Container(
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: <Widget>[
-                          OutlineBorderCounter(
-                            label: 'Words committed\nto memory',
-                            numberToShow:
-                                userData.wordsCommitted,
-                          ),
-                          OutlineBorderCounter(
-                            label: 'Words left',
-                            numberToShow: userData.totalNumOfWords - userData.wordsCommitted,
-                          ),
-                        ],
+              currentWordToRefreshInMemory != -1 ? Expanded(
+                flex: 2,
+                child: Center(child: Text('Refresh old words in memory', textAlign: TextAlign.center, style: TextStyle(fontSize: 30))),
+              ) : topFlex == 2
+                  ? Expanded(
+                      flex: topFlex,
+                      child: Container(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: <Widget>[
+                            OutlineBorderCounter(
+                              label: 'Words committed\nto memory',
+                              numberToShow:
+                                  userData.wordsCommitted,
+                            ),
+                            OutlineBorderCounter(
+                              label: 'Words left',
+                              numberToShow: userData.totalNumOfWords - userData.wordsCommitted,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  )
-                : Container(),
-            Expanded(
-              flex: middleFlex,
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 30.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
+                    )
+                  : Container(),
+              Expanded(
+                flex: middleFlex,
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 30.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
 //                    Text(
 //                      '${usersDataNotifier.wordList[currentWord].mainText}',
 //                      style: TextStyle(fontSize: 40, fontFamily: 'MSyahei'),
 //                    ),
-                    Image.asset(
-                        'assets/images/main_text_images/${userData.wordList[currentWord].mainText}'),
-                    Text(
-                      '${userData.wordList[currentWord].firstValue}',
-                      style: TextStyle(fontSize: 18, fontFamily: 'MSyahei'),
-                    ),
-                    Text(
-                      '${userData.wordList[currentWord].secondValue}',
-                      style: TextStyle(fontSize: 18, fontFamily: 'MSyahei'),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 1,
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 10.0),
-                child: RaisedButton(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                  onPressed: () async {
-                    userData.wordsCommitted++;
-
-                    prefs.setInt(
-                        'wordsCommitted', userData.wordsCommitted);
-
-                    if(currentWordToRefreshInMemory != -1) {
-                     userData.wordList[currentWordToRefreshInMemory].giw = '0';
-                    }
-
-                    userData.wordList[currentWord].mempool = 1;
-                    userData.currentDayToRemember--;
-                    rememberedWords = userData.toRememberWordsNum -
-                        userData.currentDayToRemember;
-
-                    List<String> data = List();
-                    userData.wordList.forEach((element) {
-                      data.add(element.toString());
-                      print(element.toString());
-                    });
-                    prefs.setStringList('words', data);
-                    prefs.setInt('successRememberedWordsNum',
-                        userData.successRememberedWordsNum);
-                    prefs.setInt(
-                        'wordsCommitted', userData.wordsCommitted);
-                    prefs.setInt('currentDayToRemember',
-                        userData.currentDayToRemember);
-                    prefs.setInt('toRememberWordsNum',
-                        userData.toRememberWordsNum);
-
-                    currentWordToRefreshInMemory = getCurrentWordToRefreshInMemory();
-                    if(currentWordToRefreshInMemory == -1){
-                      currentWord = getWordNumToRemember(userData);
-                    }else currentWord = currentWordToRefreshInMemory;
-
-
-                    if (userData.currentDayToRemember <= 0 ||
-                        (currentWord == -1 && rememberedWords > 0)) {
-                      DateTime date = DateTime.now();
-                      prefs.setInt(
-                          'lastCommitDate', date.millisecondsSinceEpoch);
-
-                    }
-
-                    setState(() {});
-                  },
-                  child: Text(
-                    'Click when committed',
-                    style: TextStyle(color: Colors.white, fontSize: 20),
+                      Image.asset(
+                          'assets/images/main_text_images/${userData.wordList[currentWord].mainText}'),
+                      Text(
+                        '${userData.wordList[currentWord].firstValue}',
+                        style: TextStyle(fontSize: 18, fontFamily: 'MSyahei'),
+                      ),
+                      Text(
+                        '${userData.wordList[currentWord].secondValue}',
+                        style: TextStyle(fontSize: 18, fontFamily: 'MSyahei'),
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ),
-          ],
+              Expanded(
+                flex: 1,
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 10.0),
+                  child: RaisedButton(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    onPressed: () async {
+                      userData.wordsCommitted++;
+
+                      prefs.setInt(
+                          'wordsCommitted', userData.wordsCommitted);
+
+                      if(currentWordToRefreshInMemory != -1) {
+                       userData.wordList[currentWordToRefreshInMemory].giw = '0';
+                      }
+
+                      userData.wordList[currentWord].mempool = 1;
+                      userData.currentDayToRemember--;
+                      rememberedWords = userData.toRememberWordsNum -
+                          userData.currentDayToRemember;
+
+                      List<String> data = List();
+                      userData.wordList.forEach((element) {
+                        data.add(element.toString());
+                        print(element.toString());
+                      });
+                      prefs.setStringList('words', data);
+                      prefs.setInt('successRememberedWordsNum',
+                          userData.successRememberedWordsNum);
+                      prefs.setInt(
+                          'wordsCommitted', userData.wordsCommitted);
+                      prefs.setInt('currentDayToRemember',
+                          userData.currentDayToRemember);
+                      prefs.setInt('toRememberWordsNum',
+                          userData.toRememberWordsNum);
+
+                      currentWordToRefreshInMemory = getCurrentWordToRefreshInMemory();
+                      if(currentWordToRefreshInMemory == -1){
+                        currentWord = getWordNumToRemember(userData);
+                      }else currentWord = currentWordToRefreshInMemory;
+
+
+                      if (userData.currentDayToRemember <= 0 ||
+                          (currentWord == -1 && rememberedWords > 0)) {
+                        DateTime date = DateTime.now();
+                        prefs.setInt(
+                            'lastCommitDate', date.millisecondsSinceEpoch);
+
+                      }
+
+                      setState(() {});
+                    },
+                    child: Text(
+                      'Click when committed',
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
