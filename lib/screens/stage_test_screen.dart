@@ -187,7 +187,7 @@ class _StageTestScreenState extends State<StageTestScreen> {
               ),
             ) : Container(),
             Expanded(
-              flex : 4,
+              flex : 5,
               child: Container(
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 20.0),
@@ -200,7 +200,7 @@ class _StageTestScreenState extends State<StageTestScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 15),
+//            SizedBox(height: 15),
             Expanded(
               flex: 2,
               child: Padding(
@@ -225,7 +225,6 @@ class _StageTestScreenState extends State<StageTestScreen> {
             ),
             Builder(
               builder: (context) => Container(
-                padding: EdgeInsets.symmetric(vertical: 10),
                 child: FlatButton(
                   onPressed: () async {
                     final prefs = await SharedPreferences.getInstance();

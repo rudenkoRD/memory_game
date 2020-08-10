@@ -120,7 +120,7 @@ class _TestingScreenState extends State<TestingScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Expanded(
-                flex: 4,
+                flex: 5,
                 child: Container(
                   child: Center(
                     child: SingleChildScrollView(
@@ -130,7 +130,7 @@ class _TestingScreenState extends State<TestingScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 15),
+//              SizedBox(height: 15),
               Expanded(
                 flex: 2,
                 child: Container(
@@ -153,7 +153,6 @@ class _TestingScreenState extends State<TestingScreen> {
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(bottom: 5),
                 child: FlatButton(
                   padding: EdgeInsets.symmetric(horizontal: 50),
                   color: Colors.deepPurple,
