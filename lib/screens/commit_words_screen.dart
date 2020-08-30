@@ -18,6 +18,7 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
   int topFlex = 2;
   int middleFlex = 6;
   int currentWord = -1;
+  bool isPlayed = false;
 
   int currentWordToRefreshInMemory;
 
@@ -86,7 +87,7 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
         WidgetsBinding.instance.addPostFrameCallback((_) async {
           await showDialog(context: context,
               builder: (context) => AlertDialog(
-                content: Text('You making great progress, tomorrow we will do a State test to check your progress to date'),
+                content: Text('You\'re making great progress, tomorrow we will do a State test to check your progress to date'),
                 actions: <Widget>[
                   FlatButton(
                     onPressed: () {
@@ -122,7 +123,7 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
                     exit(0);
                   },
                   child: Text(
-                    'ok, leave an app',
+                    'ok, leave the app',
                     style: TextStyle(color: Colors.white),
                   ),
                   color: Colors.green,
@@ -157,7 +158,7 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
                     exit(0);
                   },
                   child: Text(
-                    'ok, leave an app',
+                    'ok, leave the app',
                     style: TextStyle(color: Colors.white),
                   ),
                   color: Colors.green,
@@ -239,10 +240,10 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
           ),
         );
       });
-    }else if(currentWord != -1) {
+    }else if(currentWord != -1 && !isPlayed) {
+      isPlayed = true;
       WidgetsBinding.instance.addPostFrameCallback((_)  {
-        audioCache.play(
-            'audio/${userData.wordList[currentWord].audioFileName}');
+        audioCache.play('audio/${userData.wordList[currentWord].audioFileName}');
       });
     }
 
@@ -250,6 +251,7 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        titleSpacing: 1.0,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
@@ -361,12 +363,15 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
                           'assets/images/main_text_images/${userData.wordList[currentWord].mainText}'),
                       Text(
                         '${userData.wordList[currentWord].firstValue}',
-                        style: TextStyle(fontSize: 18, fontFamily: 'MSyahei'),
+                        style: TextStyle(fontSize: 20, fontFamily: 'MSyahei'),
                       ),
                       Text(
                         '${userData.wordList[currentWord].secondValue}',
                         style: TextStyle(fontSize: 18, fontFamily: 'MSyahei'),
                       ),
+
+//                      Image.asset(
+//                          'assets/images/main_text_images/${userData.wordList[currentWord].mainText}'),
                     ],
                   ),
                 ),
@@ -379,6 +384,7 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
                     onPressed: () async {
+                      isPlayed = false;
                       userData.wordsCommitted++;
 
                       prefs.setInt(
