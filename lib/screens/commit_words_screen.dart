@@ -365,13 +365,16 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
                         '${userData.wordList[currentWord].firstValue}',
                         style: TextStyle(fontSize: 20, fontFamily: 'MSyahei'),
                       ),
-                      Text(
-                        '${userData.wordList[currentWord].secondValue}',
-                        style: TextStyle(fontSize: 18, fontFamily: 'MSyahei'),
-                      ),
+//                      Text(
+//                        '${userData.wordList[currentWord].secondValue}',
+//                        style: TextStyle(fontSize: 18, fontFamily: 'MSyahei'),
+//                      ),
 
-//                      Image.asset(
-//                          'assets/images/main_text_images/${userData.wordList[currentWord].mainText}'),
+                      Image.asset(
+                          'assets/images/secondvalue/${userData.wordList[currentWord].secondValue}',
+                      height: 30,),
+
+
                     ],
                   ),
                 ),

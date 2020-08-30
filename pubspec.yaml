@@ -53,6 +53,7 @@ flutter:
   assets:
     - assets/database/databasetest1.csv
     - assets/images/display_images/
+    - assets/images/secondvalue/
     - assets/images/welcome_screen_image.jpg
     - assets/images/main_text_images/
     - assets/audio/
