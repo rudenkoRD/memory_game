@@ -170,80 +170,88 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
       );
     }
 
-    if (userData.wordList[currentWord].displayFileName
-        .toString()
-        .isNotEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
-        audioCache.play(
-            'audio/${userData.wordList[currentWord].displayAudioName}');
-        await showDialog<String>(
-          context: context,
-          builder: (BuildContext context) => WillPopScope(
-            onWillPop: () async => false,
-            child: AlertDialog(
-              contentPadding: EdgeInsets.all(0),
-              insetPadding: EdgeInsets.all(0),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Image.asset(
-                        'assets/images/display_images/${userData.wordList[currentWord].displayFileName}'),
-                    RaisedButton(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                      onPressed: () async {
-                        Navigator.of(context).pop();
-                        final prefs = await SharedPreferences.getInstance();
-                        userData.wordsCommitted++;
-                        userData.wordList[currentWord].mempool = 1;
-                        userData.currentDayToRemember--;
-                        rememberedWords = userData.toRememberWordsNum -
-                            userData.currentDayToRemember;
+    // if (userData.wordList[currentWord].displayFileName
+    //     .toString()
+    //     .isNotEmpty) {
+    //   WidgetsBinding.instance.addPostFrameCallback((_) async {
+    //     audioCache.play(
+    //         'audio/${userData.wordList[currentWord].displayAudioName}');
+    //     await showDialog<String>(
+    //       context: context,
+    //       builder: (BuildContext context) => WillPopScope(
+    //         onWillPop: () async => false,
+    //         child: AlertDialog(
+    //           contentPadding: EdgeInsets.all(0),
+    //           insetPadding: EdgeInsets.all(0),
+    //           content: SingleChildScrollView(
+    //             child: Column(
+    //               mainAxisSize: MainAxisSize.min,
+    //               crossAxisAlignment: CrossAxisAlignment.center,
+    //               children: <Widget>[
+    //                 Image.asset(
+    //                     'assets/images/display_images/${userData.wordList[currentWord].displayFileName}'),
+    //                 RaisedButton(
+    //                   shape: RoundedRectangleBorder(
+    //                       borderRadius: BorderRadius.circular(10)),
+    //                   onPressed: () async {
+    //                     Navigator.of(context).pop();
+    //                     final prefs = await SharedPreferences.getInstance();
+    //                     userData.wordsCommitted++;
+    //                     userData.wordList[currentWord].mempool = 1;
+    //                     userData.currentDayToRemember--;
+    //                     rememberedWords = userData.toRememberWordsNum -
+    //                         userData.currentDayToRemember;
+    //
+    //                     List<String> data = List();
+    //                     userData.wordList.forEach((element) {
+    //                       data.add(element.toString());
+    //                       print(element.toString());
+    //                     });
+    //                     prefs.setStringList('words', data);
+    //                     prefs.setInt('successRememberedWordsNum',
+    //                         userData.successRememberedWordsNum);
+    //                     prefs.setInt(
+    //                         'wordsCommitted', userData.wordsCommitted);
+    //                     prefs.setInt('currentDayToRemember',
+    //                         userData.currentDayToRemember);
+    //                     prefs.setInt('toRememberWordsNum',
+    //                         userData.toRememberWordsNum);
+    //
+    //                     currentWord = getWordNumToRemember(userData);
+    //
+    //                     if (userData.currentDayToRemember <= 0 ||
+    //                         (currentWord == -1 && rememberedWords > 0)) {
+    //                       DateTime date = DateTime.now();
+    //                       prefs.setInt(
+    //                           'lastCommitDate', date.millisecondsSinceEpoch);
+    //                     }
+    //
+    //                     setState(() {});
+    //                   },
+    //                   child: Text(
+    //                     'Click when committed',
+    //                     style: TextStyle(color: Colors.white, fontSize: 20),
+    //                   ),
+    //                 ),
+    //               ],
+    //             ),
+    //           ),
+    //         ),
+    //       ),
+    //     );
+    //   });
+    // }
 
-                        List<String> data = List();
-                        userData.wordList.forEach((element) {
-                          data.add(element.toString());
-                          print(element.toString());
-                        });
-                        prefs.setStringList('words', data);
-                        prefs.setInt('successRememberedWordsNum',
-                            userData.successRememberedWordsNum);
-                        prefs.setInt(
-                            'wordsCommitted', userData.wordsCommitted);
-                        prefs.setInt('currentDayToRemember',
-                            userData.currentDayToRemember);
-                        prefs.setInt('toRememberWordsNum',
-                            userData.toRememberWordsNum);
 
-                        currentWord = getWordNumToRemember(userData);
-
-                        if (userData.currentDayToRemember <= 0 ||
-                            (currentWord == -1 && rememberedWords > 0)) {
-                          DateTime date = DateTime.now();
-                          prefs.setInt(
-                              'lastCommitDate', date.millisecondsSinceEpoch);
-                        }
-
-                        setState(() {});
-                      },
-                      child: Text(
-                        'Click when committed',
-                        style: TextStyle(color: Colors.white, fontSize: 20),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      });
-    }else if(currentWord != -1 && !isPlayed) {
+    if(currentWord != -1 && !isPlayed) {
       isPlayed = true;
       WidgetsBinding.instance.addPostFrameCallback((_)  {
-        audioCache.play('audio/${userData.wordList[currentWord].audioFileName}');
+        if(userData.wordList[currentWord].displayFileName
+            .toString()
+            .isNotEmpty){
+          audioCache.play(
+              'audio/${userData.wordList[currentWord].displayAudioName}');
+        } else audioCache.play('audio/${userData.wordList[currentWord].audioFileName}');
       });
     }
 
@@ -261,8 +269,12 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
               children: <Widget>[
                 FlatButton(
                   onPressed: () {
-                    audioCache.play(
-                        'audio/${userData.wordList[currentWord].audioFileName}');
+                    userData.wordList[currentWord].displayFileName
+                        .toString()
+                        .isEmpty ?
+                    audioCache.play('audio/${userData.wordList[currentWord].audioFileName}')
+                        : audioCache.play(
+                        'audio/${userData.wordList[currentWord].displayAudioName}');
                   },
                   child: Icon(Icons.hearing, color: Colors.white),
                 ),
@@ -313,7 +325,9 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
           ],
         ),
       ),
-      body: SingleChildScrollView(
+      body: userData.wordList[currentWord].displayFileName
+          .toString()
+          .isEmpty ? SingleChildScrollView(
         child: Container(
           height: totalHeight,
           padding: EdgeInsets.all(4),
@@ -443,7 +457,75 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
             ],
           ),
         ),
-      ),
+      )
+          : SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.all(4),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Image.asset(
+                  'assets/images/display_images/${userData.wordList[currentWord].displayFileName}'),
+              RaisedButton(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                onPressed: () async {
+                  isPlayed = false;
+                  userData.wordsCommitted++;
+
+                  prefs.setInt(
+                      'wordsCommitted', userData.wordsCommitted);
+
+                  if(currentWordToRefreshInMemory != -1) {
+                    userData.wordList[currentWordToRefreshInMemory].giw = '0';
+                  }
+
+                  userData.wordList[currentWord].mempool = 1;
+                  userData.currentDayToRemember--;
+                  rememberedWords = userData.toRememberWordsNum -
+                      userData.currentDayToRemember;
+
+                  List<String> data = List();
+                  userData.wordList.forEach((element) {
+                    data.add(element.toString());
+                    print(element.toString());
+                  });
+                  prefs.setStringList('words', data);
+                  prefs.setInt('successRememberedWordsNum',
+                      userData.successRememberedWordsNum);
+                  prefs.setInt(
+                      'wordsCommitted', userData.wordsCommitted);
+                  prefs.setInt('currentDayToRemember',
+                      userData.currentDayToRemember);
+                  prefs.setInt('toRememberWordsNum',
+                      userData.toRememberWordsNum);
+
+                  currentWordToRefreshInMemory = getCurrentWordToRefreshInMemory();
+                  if(currentWordToRefreshInMemory == -1){
+                    currentWord = getWordNumToRemember(userData);
+                  }else currentWord = currentWordToRefreshInMemory;
+
+
+                  if (userData.currentDayToRemember <= 0 ||
+                      (currentWord == -1 && rememberedWords > 0)) {
+                    DateTime date = DateTime.now();
+                    prefs.setInt(
+                        'lastCommitDate', date.millisecondsSinceEpoch);
+
+                  }
+
+                  setState(() {});
+                },
+                child: Text(
+                  'Click when committed',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+              ),
+            ],
+          ),
+        ),
+      )
     );
   }
 

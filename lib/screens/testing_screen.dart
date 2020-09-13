@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:audioplayers/audio_cache.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:memory_game/notifiers/pages_notifier.dart';
 import 'package:memory_game/notifiers/users_data_notifier.dart';
@@ -138,6 +139,9 @@ class _TestingScreenState extends State<TestingScreen> {
                   child: Form(
                     key: answerFormState,
                     child: TextFormField(
+                      enableSuggestions: false,
+                      autocorrect: false,
+                      keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
                           labelText: 'enter your answer',
                           border: OutlineInputBorder()),

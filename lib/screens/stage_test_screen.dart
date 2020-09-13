@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:audioplayers/audio_cache.dart';
 import 'package:flutter/material.dart';
@@ -13,14 +14,12 @@ class StageTestScreen extends StatefulWidget {
   final int lastCommitDateTime;
 
   const StageTestScreen({Key key, this.lastCommitDateTime}) : super(key: key);
+
   @override
   _StageTestScreenState createState() => _StageTestScreenState();
 }
 
-
-
 class _StageTestScreenState extends State<StageTestScreen> {
-
   UsersDataNotifier userData;
   ScreenNotifier screenNotifier;
   int topFlex = 1;
@@ -37,26 +36,41 @@ class _StageTestScreenState extends State<StageTestScreen> {
   var focusNode = FocusNode();
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
   }
 
+  int getNextWordToTest() {
+    Random rnd = Random();
+    int wordIdx = rnd.nextInt(userData.wordList.length);
+    List<bool> visited =
+        List.generate(userData.wordList.length, (index) => false);
+    visited[wordIdx] = true;
+    int visitedNum = 1;
 
-  int getNextWordToTest(){
-    for(int i = 0; i < userData.wordList.length; i++){
-      print('${userData.wordList[i].isMemorized} ${userData.wordList[i].mempool} data');
+    while (true) {
+      if ((userData.wordList[wordIdx].isMemorized ||
+              userData.wordList[wordIdx].mempool == 1) &&
+          userData.wordList[wordIdx].giw == '0') {
+        return wordIdx;
+      }
 
-      if( (userData.wordList[i].isMemorized || userData.wordList[i].mempool == 1) && userData.wordList[i].giw == '0')
-        return i;
+      if (visitedNum == userData.wordList.length) {
+        return -1;
+      }
+
+      wordIdx = rnd.nextInt(userData.wordList.length);
+      if (visited[wordIdx] == false) visitedNum++;
+      visited[wordIdx] = true;
     }
-
-    return -1;
   }
 
-  int getTotalNumberOfTestedWords(){
+  int getTotalNumberOfTestedWords() {
     int res = 0;
-    for(int i = 0; i < userData.wordList.length; i++){
-      if((userData.wordList[i].isMemorized || userData.wordList[i].mempool == 1) && userData.wordList[i].giw == '0') res++;
+    for (int i = 0; i < userData.wordList.length; i++) {
+      if ((userData.wordList[i].isMemorized ||
+              userData.wordList[i].mempool == 1) &&
+          userData.wordList[i].giw == '0') res++;
     }
 
     return res;
@@ -68,45 +82,45 @@ class _StageTestScreenState extends State<StageTestScreen> {
         await showDialog(
             context: context,
             builder: (context) => WillPopScope(
-              onWillPop: () async => false,
-              child: AlertDialog(
-                title: Text(
-                    'You have to wait till the next day to test yourself'),
-                actions: <Widget>[
-                  FlatButton(
-                    onPressed: () {
-                      exit(0);
-                    },
-                    child: Text(
-                      'ok, leave an app',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    color: Colors.green,
+                  onWillPop: () async => false,
+                  child: AlertDialog(
+                    title: Text(
+                        'You have to wait till the next day to test yourself'),
+                    actions: <Widget>[
+                      FlatButton(
+                        onPressed: () {
+                          exit(0);
+                        },
+                        child: Text(
+                          'ok, leave an app',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        color: Colors.green,
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ));
+                ));
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    totalHeight = MediaQuery.of(context).size.height - (AppBar().preferredSize.height + MediaQuery.of(context).padding.top);
+    totalHeight = MediaQuery.of(context).size.height -
+        (AppBar().preferredSize.height + MediaQuery.of(context).padding.top);
 
     focusNode.addListener(() {
       keyboardIsActive = focusNode.hasFocus;
     });
 
-
     userData = Provider.of<UsersDataNotifier>(context);
     screenNotifier = Provider.of<ScreenNotifier>(context);
 
-    if(currentWord == -1) currentWord = getNextWordToTest();
+    if (currentWord == -1) currentWord = getNextWordToTest();
     totalNumberOfTestedWords = getTotalNumberOfTestedWords();
 
     DateTime lastCommitDate =
-    DateTime.fromMillisecondsSinceEpoch(widget.lastCommitDateTime);
+        DateTime.fromMillisecondsSinceEpoch(widget.lastCommitDateTime);
     checkDay(lastCommitDate);
 
     if (lastCommitDate.difference(DateTime.now()).inDays == 0) {
@@ -166,28 +180,30 @@ class _StageTestScreenState extends State<StageTestScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
-            showCounters && !keyboardIsActive ? Expanded(
-              flex: 2,
-              child: Center(
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    OutlineBorderCounter(
-                      label: 'Words committed\nto memory',
-                      numberToShow: userData.wordsCommitted,
+            showCounters && !keyboardIsActive
+                ? Expanded(
+                    flex: 2,
+                    child: Center(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          OutlineBorderCounter(
+                            label: 'Words committed\nto memory',
+                            numberToShow: userData.wordsCommitted,
+                          ),
+                          OutlineBorderCounter(
+                            label: 'Words to test left',
+                            numberToShow: totalNumberOfTestedWords,
+                          ),
+                        ],
+                      ),
                     ),
-                    OutlineBorderCounter(
-                      label: 'Words to test left',
-                      numberToShow: totalNumberOfTestedWords,
-                    ),
-                  ],
-                ),
-              ),
-            ) : Container(),
+                  )
+                : Container(),
             Expanded(
-              flex : 5,
+              flex: 5,
               child: Container(
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 20.0),
@@ -209,6 +225,9 @@ class _StageTestScreenState extends State<StageTestScreen> {
                   key: stateTestingAnswer,
                   child: TextFormField(
                     focusNode: focusNode,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                         labelText: 'enter your answer',
                         border: OutlineInputBorder()),
@@ -229,35 +248,49 @@ class _StageTestScreenState extends State<StageTestScreen> {
                   onPressed: () async {
                     final prefs = await SharedPreferences.getInstance();
 
-                    if(stateTestingAnswer.currentState.validate()){
+                    if (stateTestingAnswer.currentState.validate()) {
                       stateTestingAnswer.currentState.save();
                       stateTestingAnswer.currentState.reset();
 
-                      if(currentAnswer.trim().toLowerCase() == userData.wordList[currentWord].firstValue.toString().trim().toLowerCase()){
-
-                        Scaffold.of(context).showSnackBar(
-                          SnackBar(
-                            duration: Duration(milliseconds: 900),
-                            backgroundColor: Colors.green,
-                            content: Text('Well done', style: TextStyle(fontSize: 25,), textAlign: TextAlign.center,),
-                          ),
-                        ).closed
-                        .then((value) {
+                      if (currentAnswer.trim().toLowerCase() ==
+                          userData.wordList[currentWord].firstValue
+                              .toString()
+                              .trim()
+                              .toLowerCase()) {
+                        Scaffold.of(context)
+                            .showSnackBar(
+                              SnackBar(
+                                duration: Duration(milliseconds: 900),
+                                backgroundColor: Colors.green,
+                                content: Text(
+                                  'Well done',
+                                  style: TextStyle(
+                                    fontSize: 25,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            )
+                            .closed
+                            .then((value) {
                           currentWord = getNextWordToTest();
-                          if(currentWord == -1){
-
-                            for(int i = 0; i < userData.wordList.length; i++){
-                              if(userData.wordList[i].giw == '1')
+                          if (currentWord == -1) {
+                            for (int i = 0; i < userData.wordList.length; i++) {
+                              if (userData.wordList[i].giw == '1')
                                 userData.wordList[i].giw = '0';
                             }
 
-                            for(int i = 0; i < userData.testingStageIsComplete.length; i++){
-                              if(userData.testingStageIsComplete[i] == 'active'){
+                            for (int i = 0;
+                                i < userData.testingStageIsComplete.length;
+                                i++) {
+                              if (userData.testingStageIsComplete[i] ==
+                                  'active') {
                                 userData.testingStageIsComplete[i] = 'true';
                               }
                             }
 
-                            prefs.setStringList('testingStageIsComplete', userData.testingStageIsComplete);
+                            prefs.setStringList('testingStageIsComplete',
+                                userData.testingStageIsComplete);
 
                             List<String> data = List();
                             userData.wordList.forEach((element) {
@@ -277,39 +310,46 @@ class _StageTestScreenState extends State<StageTestScreen> {
                           setState(() {});
                         });
 
-
-                        if(!userData.wordList[currentWord].isMemorized) {
+                        if (!userData.wordList[currentWord].isMemorized) {
                           userData.successRememberedWordsNum++;
                         }
 
                         userData.wordList[currentWord].isMemorized = true;
                         userData.wordList[currentWord].giw = '1';
                         userData.wordList[currentWord].mempool = 0;
-
-                      }else {
-                        Scaffold.of(context).showSnackBar(
-                          SnackBar(
-                            duration: Duration(milliseconds: 900),
-                            backgroundColor: Colors.red,
-                            content: Text('Oops that\'s not right',
-                              style: TextStyle(fontSize: 25),textAlign: TextAlign.center,),
-                          ),
-                        ).closed.then((value) {
+                      } else {
+                        Scaffold.of(context)
+                            .showSnackBar(
+                              SnackBar(
+                                duration: Duration(milliseconds: 900),
+                                backgroundColor: Colors.red,
+                                content: Text(
+                                  'Oops that\'s not right',
+                                  style: TextStyle(fontSize: 25),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            )
+                            .closed
+                            .then((value) {
                           currentWord = getNextWordToTest();
-                          if(currentWord == -1){
-
-                            for(int i = 0; i < userData.wordList.length; i++){
-                              if(userData.wordList[i].giw == '1')
+                          if (currentWord == -1) {
+                            for (int i = 0; i < userData.wordList.length; i++) {
+                              if (userData.wordList[i].giw == '1')
                                 userData.wordList[i].giw = '0';
                             }
 
-                            for(int i = 0; i < userData.testingStageIsComplete.length; i++){
-                              if(userData.testingStageIsComplete[i] == 'active'){
+                            for (int i = 0;
+                                i < userData.testingStageIsComplete.length;
+                                i++) {
+                              if (userData.testingStageIsComplete[i] ==
+                                  'active') {
                                 userData.testingStageIsComplete[i] = 'true';
                               }
                             }
 
-                            prefs.setStringList('testingStageIsComplete', userData.testingStageIsComplete);
+                            prefs.setStringList('testingStageIsComplete',
+                                userData.testingStageIsComplete);
 
                             List<String> data = List();
                             userData.wordList.forEach((element) {
@@ -329,9 +369,10 @@ class _StageTestScreenState extends State<StageTestScreen> {
                           setState(() {});
                         });
 
-                        if(userData.wordList[currentWord].isMemorized)
+                        if (userData.wordList[currentWord].isMemorized)
                           userData.wordList[currentWord].giw = 'w';
-                        else userData.wordList[currentWord].giw = '1';
+                        else
+                          userData.wordList[currentWord].giw = '1';
 
                         userData.wordList[currentWord].isMemorized = false;
 
@@ -339,9 +380,7 @@ class _StageTestScreenState extends State<StageTestScreen> {
                         userData.wordsCommitted--;
                       }
 
-
                       prefs.setInt('wordsCommitted', userData.wordsCommitted);
-
 
                       List<String> data = List();
                       userData.wordList.forEach((element) {
@@ -349,9 +388,7 @@ class _StageTestScreenState extends State<StageTestScreen> {
                         print(element.toString());
                       });
                       prefs.setStringList('words', data);
-
                     }
-
                   },
                   padding: EdgeInsets.symmetric(horizontal: 50),
                   color: Colors.deepPurple,
