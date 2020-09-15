@@ -35,7 +35,6 @@ class _MyAppState extends State<MyApp> {
     final prefs = await SharedPreferences.getInstance();
     lastCommitDateTime = prefs.getInt('lastCommitDate');
     numOfLaunches = prefs.getInt('numberOfLaunches');
-
     print(numOfLaunches);
     numOfLaunches = numOfLaunches == null ? 0 : numOfLaunches;
 
