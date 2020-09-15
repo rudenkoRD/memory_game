@@ -47,7 +47,6 @@ class _StageTestScreenState extends State<StageTestScreen> {
         List.generate(userData.wordList.length, (index) => false);
     visited[wordIdx] = true;
     int visitedNum = 1;
-
     while (true) {
       if ((userData.wordList[wordIdx].isMemorized ||
               userData.wordList[wordIdx].mempool == 1) &&
