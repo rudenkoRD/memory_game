@@ -102,8 +102,12 @@ class _TestingScreenState extends State<TestingScreen> {
             Text('Testing'),
             FlatButton(
               onPressed: () {
-                audioCache.play(
-                    'audio/${userData.wordList[currentTestingWord].audioFileName}');
+                userData.wordList[currentTestingWord].displayFileName
+                    .toString()
+                    .isEmpty ?
+                audioCache.play('audio/${userData.wordList[currentTestingWord].audioFileName}')
+                    : audioCache.play(
+                    'audio/${userData.wordList[currentTestingWord].displayAudioName}');
               },
               child: Icon(
                 Icons.hearing,

@@ -148,8 +148,12 @@ class _StageTestScreenState extends State<StageTestScreen> {
               children: <Widget>[
                 FlatButton(
                   onPressed: () {
-                    audioCache.play(
-                        'audio/${userData.wordList[currentWord].audioFileName}');
+                    userData.wordList[currentWord].displayFileName
+                        .toString()
+                        .isEmpty ?
+                    audioCache.play('audio/${userData.wordList[currentWord].audioFileName}')
+                        : audioCache.play(
+                        'audio/${userData.wordList[currentWord].displayAudioName}');
                   },
                   child: Icon(
                     Icons.hearing,
