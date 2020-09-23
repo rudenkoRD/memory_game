@@ -87,7 +87,7 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
         WidgetsBinding.instance.addPostFrameCallback((_) async {
           await showDialog(context: context,
               builder: (context) => AlertDialog(
-                content: Text('You\'re making great progress, tomorrow we will do a State test to check your progress to date'),
+                content: Text('You\'re making great progress, tomorrow we will do a Stage test to check your progress to date'),
                 actions: <Widget>[
                   FlatButton(
                     onPressed: () {
@@ -263,7 +263,10 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text('Commit words'),
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: Text('Commit words'),
+            ),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
@@ -295,7 +298,7 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
                       }
                     },
                     child: CounterWidget(
-                      numberToShow: userData.wordsCommitted.toString(),
+                      numberToShow: userData.wordsCommitted,
                     )),
                 FlatButton(
                     onPressed: () {

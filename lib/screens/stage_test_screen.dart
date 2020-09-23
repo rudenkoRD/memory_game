@@ -75,6 +75,15 @@ class _StageTestScreenState extends State<StageTestScreen> {
     return res;
   }
 
+  int getNumberOfWrongWords(){
+    int res = 0;
+    for(int i = 0; i < userData.wordList.length; i++)
+      if(!userData.wordList[i].isMemorized && (userData.wordList[i].giw == '1' || userData.wordList[i].giw == 'w'))
+        res++;
+
+    return res;
+  }
+
   checkDay(lastCommitDate) {
     if (lastCommitDate.difference(DateTime.now()).inDays == 0) {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -168,7 +177,7 @@ class _StageTestScreenState extends State<StageTestScreen> {
                     setState(() {});
                   },
                   child: CounterWidget(
-                    numberToShow: totalNumberOfTestedWords,
+                    numberToShow: userData.wordsCommitted,
                   ),
                 ),
               ],
@@ -197,8 +206,8 @@ class _StageTestScreenState extends State<StageTestScreen> {
                             numberToShow: userData.wordsCommitted,
                           ),
                           OutlineBorderCounter(
-                            label: 'Words to test left',
-                            numberToShow: totalNumberOfTestedWords,
+                            label: 'Wrong answers',
+                            numberToShow: getNumberOfWrongWords(),
                           ),
                         ],
                       ),
