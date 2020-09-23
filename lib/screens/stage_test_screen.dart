@@ -177,7 +177,7 @@ class _StageTestScreenState extends State<StageTestScreen> {
                     setState(() {});
                   },
                   child: CounterWidget(
-                    numberToShow: userData.wordsCommitted,
+                    numberToShow: totalNumberOfTestedWords,
                   ),
                 ),
               ],
