@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:audioplayers/audio_cache.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:memory_game/notifiers/pages_notifier.dart';
 import 'package:memory_game/notifiers/users_data_notifier.dart';
 import 'package:memory_game/widgets/counter_widget.dart';
 import 'package:memory_game/widgets/outline_border_counter.dart';
@@ -15,6 +16,7 @@ class CommitWordsScreen extends StatefulWidget {
 
 class _CommitWordsScreenState extends State<CommitWordsScreen> {
   UsersDataNotifier userData;
+  ScreenNotifier screenNotifier;
   int topFlex = 2;
   int middleFlex = 6;
   int currentWord = -1;
@@ -33,7 +35,7 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
     loadPrefs();
   }
 
-  loadPrefs() async {
+  loadPrefs() async { 
     prefs = await SharedPreferences.getInstance();
   }
 
@@ -57,6 +59,7 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
   @override
   Widget build(BuildContext context) {
     userData = Provider.of<UsersDataNotifier>(context);
+    screenNotifier = Provider.of<ScreenNotifier>(context);
     rememberedWords = userData.toRememberWordsNum - userData.currentDayToRemember;
 
     if (currentWord == -1) currentWord = getWordNumToRemember(userData);
@@ -136,7 +139,6 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
     }
 
     if (currentWord == -1 && rememberedWords == 0) {
-
       return Scaffold(
         appBar: AppBar(
           title: Text('Commit words'),
@@ -149,7 +151,7 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Text(
-                  'You have learned all words!',
+                  'Next time you start the app the stage test will start again',
                   style: TextStyle(fontSize: 20),
                   textAlign: TextAlign.center,
                 ),

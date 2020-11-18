@@ -127,19 +127,24 @@ class _StageTestScreenState extends State<StageTestScreen> {
     if (currentWord == -1) currentWord = getNextWordToTest();
     totalNumberOfTestedWords = getTotalNumberOfTestedWords();
 
-    DateTime lastCommitDate =
-        DateTime.fromMillisecondsSinceEpoch(widget.lastCommitDateTime);
-    checkDay(lastCommitDate);
+    if(widget.lastCommitDateTime != null) {
+      DateTime lastCommitDate =
+      DateTime.fromMillisecondsSinceEpoch(widget.lastCommitDateTime);
+      checkDay(lastCommitDate);
 
-    if (lastCommitDate.difference(DateTime.now()).inDays == 0) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text('Testing'),
-        ),
-        body: Container(
-          color: Colors.white,
-        ),
-      );
+
+      if (lastCommitDate
+          .difference(DateTime.now())
+          .inDays == 0) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text('Testing'),
+          ),
+          body: Container(
+            color: Colors.white,
+          ),
+        );
+      }
     }
 
     print('${MediaQuery.of(context).padding.top} padding');
@@ -375,6 +380,9 @@ class _StageTestScreenState extends State<StageTestScreen> {
                             prefs.setInt('currentDayToRemember',
                                 userData.currentDayToRemember);
                             prefs.remove('lastCommitDate');
+
+
+
                             screenNotifier.currentScreen = Screen.COMMIT_SCREEN;
                           }
 

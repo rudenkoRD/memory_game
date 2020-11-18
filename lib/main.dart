@@ -57,13 +57,35 @@ class _MyAppState extends State<MyApp> {
         break;
       }
     }
+    int currentWord = getWordNumToRemember(usersDataNotifier);
+    int currentWordToRefreshInMemory = getCurrentWordToRefreshInMemory(usersDataNotifier);
+    if(currentWordToRefreshInMemory != -1) currentWord = currentWordToRefreshInMemory;
 
-    if (lastCommitDateTime != null) {
+    if(currentWord == -1){
+      screenNotifier.currentScreen = Screen.STAGE_TESTING_SCREEN;
+    }else if (lastCommitDateTime != null) {
       screenNotifier.currentScreen = isEnterStageTestScreen ? Screen.STAGE_TESTING_SCREEN : Screen.TESTING_SCREEN;
     } else if (numOfLaunches != 0) {
       screenNotifier.currentScreen = Screen.COMMIT_SCREEN;
     } else
       screenNotifier.currentScreen = Screen.WELCOME_SCREEN;
+  }
+
+  int getWordNumToRemember(UsersDataNotifier userData) {
+    for (int i = 0; i < userData.wordList.length; i++) {
+      if (userData.wordList[i].isMemorized == false &&
+          userData.wordList[i].mempool == 0) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  int getCurrentWordToRefreshInMemory(UsersDataNotifier userData){
+    for(int i = 0; i < userData.wordList.length; i++){
+      if(userData.wordList[i].giw == 'w') return i;
+    }
+    return -1;
   }
 
   _getUserData(context) async {
@@ -137,7 +159,6 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     _getUserData(context);
     _getLastCommitDate(context);
-
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
