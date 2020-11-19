@@ -151,7 +151,7 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Text(
-                  'Next time you start the app the stage test will start again',
+                  'Well done you have completed all the words. The next time you start the app the last stage test will start again so you can do a refresh',
                   style: TextStyle(fontSize: 20),
                   textAlign: TextAlign.center,
                 ),
