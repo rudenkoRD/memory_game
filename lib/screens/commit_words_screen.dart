@@ -251,8 +251,10 @@ class _CommitWordsScreenState extends State<CommitWordsScreen> {
         if(userData.wordList[currentWord].displayFileName
             .toString()
             .isNotEmpty){
+
+          String path = 'audio/${userData.wordList[currentWord].displayAudioName}';
           audioCache.play(
-              'audio/${userData.wordList[currentWord].displayAudioName}');
+             path);
         } else audioCache.play('audio/${userData.wordList[currentWord].audioFileName}');
       });
     }
