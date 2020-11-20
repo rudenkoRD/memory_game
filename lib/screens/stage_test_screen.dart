@@ -381,8 +381,6 @@ class _StageTestScreenState extends State<StageTestScreen> {
                                 userData.currentDayToRemember);
                             prefs.remove('lastCommitDate');
 
-
-
                             screenNotifier.currentScreen = Screen.COMMIT_SCREEN;
                           }
 
