@@ -86,7 +86,7 @@ class _TestingScreenState extends State<TestingScreen> {
     if (lastCommitDate.difference(DateTime.now()).inDays == 0) {
       return Scaffold(
         appBar: AppBar(
-          title: Text('Stage Testing'),
+          title: Text('Testing'),
         ),
         body: Container(
           color: Colors.white,

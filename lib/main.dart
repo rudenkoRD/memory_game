@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:memory_game/notifiers/pages_notifier.dart';
@@ -58,9 +60,9 @@ class _MyAppState extends State<MyApp> {
       }
     }
     print('${usersDataNotifier.testingStageIsComplete.toString()} --- stages-----');
-    int currentWord = getWordNumToRemember(usersDataNotifier);
 
-    if(currentWord == -1){
+
+    if(getWordNumToRemember(usersDataNotifier)){
       screenNotifier.currentScreen = Screen.STAGE_TESTING_SCREEN;
     }else if (lastCommitDateTime != null) {
       screenNotifier.currentScreen = isEnterStageTestScreen ? Screen.STAGE_TESTING_SCREEN : Screen.TESTING_SCREEN;
@@ -68,16 +70,40 @@ class _MyAppState extends State<MyApp> {
       screenNotifier.currentScreen = Screen.COMMIT_SCREEN;
     } else
       screenNotifier.currentScreen = Screen.WELCOME_SCREEN;
+
+    print(screenNotifier.currentScreen);
   }
 
-  int getWordNumToRemember(UsersDataNotifier userData) {
+  bool getWordNumToRemember(UsersDataNotifier userData) {
+    bool res = true;
     for (int i = 0; i < userData.wordList.length; i++) {
-      if (userData.wordList[i].isMemorized == false &&
-          userData.wordList[i].mempool == 1) {
-        return i;
-      }
+      res &= userData.wordList[i].isMemorized;
     }
-    return -1;
+    return res;
+  }
+
+  int getNextWordToTest(userData) {
+    Random rnd = Random();
+    int wordIdx = rnd.nextInt(userData.wordList.length);
+    List<bool> visited =
+    List.generate(userData.wordList.length, (index) => false);
+    visited[wordIdx] = true;
+    int visitedNum = 1;
+    while (true) {
+      if ((userData.wordList[wordIdx].isMemorized ||
+          userData.wordList[wordIdx].mempool == 1) &&
+          userData.wordList[wordIdx].giw == '0') {
+        return wordIdx;
+      }
+
+      if (visitedNum == userData.wordList.length) {
+        return -1;
+      }
+
+      wordIdx = rnd.nextInt(userData.wordList.length);
+      if (visited[wordIdx] == false) visitedNum++;
+      visited[wordIdx] = true;
+    }
   }
 
   _getUserData(context) async {
